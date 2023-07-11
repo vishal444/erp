@@ -1,0 +1,23 @@
+{
+    "description":"Description",
+    "productName":"Product Name",
+    "sales": "Sales",
+    "purchases": "Purchases",
+    "inventory": "Inventory",
+    "data_entry": "Data Entry",
+    "add_product": "Add Product",
+    "add_product_list": "Add product to list",
+    "quantity":"Enter Quantity",
+    "price":"Enter Price",
+    "expenses": "Monthly Expenses",
+    "bulk_data": "Bulk Data Entry",
+    "select_product": " Select Product",
+    "returns": "Returns",
+    "purchase_returns": "Returns",
+    "on_hold": "Payment not Completed",
+    "print_invoice": "Print Invoice",
+    "select_customer": "Select customer",
+    "payment_received": " Payment received",
+    "enterStockDetails": " Enter your stock details",
+    "graph": "Sales Graph"
+}

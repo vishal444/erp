@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sales Input</title>
+    <style>
+      body {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 20px;
+        align-items: start;
+      }
+
+      #first-row {
+        grid-row: 1;
+        justify-self: center;
+        margin-top: 20px;
+      }
+      #white-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f2f2f2;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      #ash-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #b6b6b6;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      #sales-form-meta {
+        /* display: grid; */
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        justify-self: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #b6b6b6;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      #sales-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        justify-self: center;
+      }
+      #add-product-button {
+        background-color: black;
+        color: white;
+        padding: 5px 20px;
+        border-radius: 10px;
+        border: none;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      #button {
+        background-color: black;
+        color: white;
+        padding: 5px 20px;
+        border-radius: 10px;
+        border: none;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      table {
+        grid-column: 2;
+        margin: 0 auto;
+        border-collapse: collapse; /* Collapse the borders between table cells */
+        width: 100%;
+      }
+
+      table th,
+      table td {
+        text-align: center;
+        padding: 8px; /* Add padding to the table cells */
+      }
+    </style>
+  </head>
+  <body id="white-container">
+    <div id="first-row">
+      <h1>Sales</h1>
+    </div>
+    <form id="sales-form">
+      <div id="ash-container">
+        <div>
+          <label for="products-dropdown">Select a product:</label>
+          <select id="products-dropdown"></select>
+          <br />
+          <label for="customer-dropdown">Select a customer:</label>
+          <select id="customer-dropdown"></select>
+          <br />
+          <label>
+            Quantity:
+            <input type="number" name="quantity" id="product-quantity" />
+          </label>
+          <br />
+          <button type="button" id="add-product-button">Add Product</button>
+          <br />
+          <label for="generate-invoice">Generate Invoice:</label>
+          <input
+            type="radio"
+            id="generate-invoice"
+            name="invoice-option"
+            value="true"
+          />
+          <br />
+          <button type="submit" id="button">Save Data</button>
+        </div>
+      </div>
+      <div>
+        <table id="ash-container">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Quantity</th>
+              <th>Total</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="selected-products-table"></tbody>
+          <tfoot>
+            <tr>
+              <td>Total Amount</td>
+              <td id="total-amount"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </form>
+    <script>
+      var quantity;
+      var selectedCustomerId = null;
+      var selectedProductArray = [];
+      var customerDropdown;
+      var selectedProductArrayForPrint = [];
+      var totalAmount = 0;
+      var barcodeData = "";
+      var decodedId;
+
+      ///////////////////////////////////////////////////////////////
+      var requestForPurchase = window.indexedDB.open("productsDB", 1);
+      var productsDropdown = document.getElementById("products-dropdown");
+
+      // Add a keypress event listener to the document
+      document.addEventListener("keypress", function (event) {
+        const target = event.target;
+        // To exclude the quantity input field data from appending to barcodeData
+        if (target.id === "product-quantity") {
+          return;
+        }
+        // Add the event key to a barcodeData
+        if (!this.barcodeData) {
+          this.barcodeData = "";
+        }
+        this.barcodeData += event.key;
+        // Enable the "Add Product" button
+        addProductButton.disabled = false;
+        // Check if Enter key was pressed and barcodeData has data
+        if (event.key === "Enter") {
+          // Check if the scanned data has the expected length
+          if (this.barcodeData.length !== 18) {
+            console.log("Invalid barcode data: " + this.barcodeData);
+            this.barcodeData = "";
+            return;
+          }
+          // The input is complete - do something with the scanned barcode data
+          console.log("Scanned barcode: " + this.barcodeData);
+          // Remove the Indian prefix and check digit
+          decodedId = this.barcodeData.substring(3, 12);
+          // Remove leading zeros from the product ID
+          decodedId = parseInt(decodedId).toString();
+          console.log(" decoded: ", decodedId);
+          // Find corresponding product
+          for (var i = 0; i < productsDropdown.options.length; i++) {
+            var option = productsDropdown.options[i];
+            if (option.value === decodedId) {
+              // Select the product
+              option.selected = true;
+              // Create a label element
+              var scanningSuccessLabel = document.createElement("label");
+              scanningSuccessLabel.textContent = "Scanning success, add quantity";
+              scanningSuccessLabel.style.color = "green";
+              // Insert the label element after the customer dropdown
+              var customerDropdown =
+                document.getElementById("customer-dropdown");
+              customerDropdown.parentNode.insertBefore(
+                scanningSuccessLabel,
+                customerDropdown.nextSibling
+              );
+              break;
+            }
+          }
+          // Clear the barcode data
+          this.barcodeData = "";
+        }
+      });
+
+      // Add the products to the dropdown
+      requestForPurchase.onsuccess = function (event) {
+        var db = event.target.result;
+        var transaction = db.transaction(["products"], "readonly");
+        var productsStore = transaction.objectStore("products");
+
+        var productsCursor = productsStore.openCursor();
+        productsCursor.onsuccess = function (event) {
+          var cursor = event.target.result;
+          if (cursor) {
+            var option = document.createElement("option");
+            option.value = cursor.value.product_id;
+            option.text = cursor.value.name;
+            option.description = cursor.value.description;
+            option.price = cursor.value.selling_price;
+            productsDropdown.appendChild(option);
+            cursor.continue();
+          }
+        };
+      };
+
+      // Log errors
+      requestForPurchase.onerror = function (event) {
+        console.log("Error opening product database:", event.target.error);
+      };
+
+      function updateSelectedProductsTable() {
+        var tbody = document.getElementById("selected-products-table");
+        // Clear the current contents of the table
+        tbody.innerHTML = "";
+        // Add the new rows to the table
+        selectedProductArrayForPrint.forEach(function (product) {
+          var row = tbody.insertRow();
+          var nameCell = row.insertCell();
+          nameCell.textContent = product.name;
+          var quantityCell = row.insertCell();
+          quantityCell.textContent = product.quantity;
+          var totalCell = row.insertCell();
+          totalCell.textContent = product.total;
+          var deleteCell = row.insertCell();
+          var deleteButton = document.createElement("button");
+          deleteButton.id = "button";
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", function () {
+            // Find the index of the product in selectedProductArray
+            var productIndex = selectedProductArray.findIndex(function (
+              selectedProduct
+            ) {
+              return selectedProduct.productId === product.productId;
+            });
+            // Remove the product from selectedProductArray
+            if (productIndex !== -1) {
+              selectedProductArray.splice(productIndex, 1);
+            }
+            // Remove the product from selectedProductArrayForPrint and update the table
+            selectedProductArrayForPrint = selectedProductArrayForPrint.filter(
+              function (selectedProduct) {
+                return selectedProduct.productId !== product.productId;
+              }
+            );
+            updateSelectedProductsTable();
+          });
+          deleteCell.appendChild(deleteButton);
+        });
+
+        // Calculate total amount
+        totalAmount = selectedProductArrayForPrint.reduce(function (acc, curr) {
+          return acc + curr.total;
+        }, 0);
+
+        // Find the total-amount element
+        var totalAmountElement = document.getElementById("total-amount");
+
+        // Update the value of the total-amount element
+        totalAmountElement.textContent = totalAmount;
+
+        console.log("Updated array", selectedProductArray);
+        console.log("Updated print", selectedProductArrayForPrint);
+      }
+
+      ///////////////////// CUSTOMER ////////////////////////////////
+      // Get a reference to the customer dropdown element
+      customerDropdown = document.getElementById("customer-dropdown");
+
+      // Add the customers to the dropdown
+      var requestForCustomer = window.indexedDB.open("customerDB", 1);
+      requestForCustomer.onsuccess = function (event) {
+        var db = event.target.result;
+        var transaction = db.transaction(["customers"], "readonly");
+        var customerStore = transaction.objectStore("customers");
+        var customerCursor = customerStore.openCursor();
+        customerCursor.onsuccess = function (event) {
+          var cursor = event.target.result;
+          if (cursor) {
+            var option = document.createElement("option");
+            option.value = cursor.value.customer_id;
+            option.text = cursor.value.name;
+            customerDropdown.appendChild(option);
+            cursor.continue();
+          }
+        };
+      };
+
+      // Log errors
+      requestForCustomer.onerror = function (event) {
+        console.log("Error opening customer database:", event.target.error);
+      };
+      /////////////////////////////////////////////////////////////////////////
+      //event listener to the "Add product" button to add the selected product ID and quantity to the array
+      var addProductButton = document.getElementById("add-product-button");
+      addProductButton.addEventListener("click", function () {
+        var quantityValue = document.getElementById("product-quantity").value;
+        if (quantityValue === "") {
+          alert("Please add a quantity.");
+          return; // Stop the execution of the function
+        }
+        var prouctIdForPrint =
+          productsDropdown.options[productsDropdown.selectedIndex].value;
+        var productNameForPrint =
+          productsDropdown.options[productsDropdown.selectedIndex].text;
+        var productDescForPrint =
+          productsDropdown.options[productsDropdown.selectedIndex].description;
+        var productPriceForPrint =
+          productsDropdown.options[productsDropdown.selectedIndex].price;
+
+        const selectedProductDetails = {
+          // ------> for printing
+          productId: prouctIdForPrint,
+          name: productNameForPrint,
+          description: productDescForPrint,
+          price: productPriceForPrint,
+          quantity: document.getElementById("product-quantity").value,
+          total:
+            productPriceForPrint *
+            document.getElementById("product-quantity").value,
+        };
+
+        selectedProductArrayForPrint.push(selectedProductDetails);
+
+        // Calculate total amount
+        totalAmount = selectedProductArrayForPrint.reduce((acc, curr) => {
+          return acc + curr.total;
+        }, 0);
+        // Find the total-amount element
+        var totalAmountElement = document.getElementById("total-amount");
+
+        // Update the value of the total-amount element
+        totalAmountElement.textContent = totalAmount;
+        // Create an object with the selected product ID and quantity
+        const selectedProduct = {
+          product: productsDropdown.value,
+          quantity: document.getElementById("product-quantity").value,
+        };
+
+        // Push the selected product object into the array
+        selectedProductArray.push(selectedProduct);
+        // Clear the selected contents of the product dropdown list and quantity field
+        productsDropdown.value = "";
+        document.getElementById("product-quantity").value = "";
+        // Disable the "Add Product" button
+        addProductButton.disabled = true;
+        // To display the selected products in the form
+        updateSelectedProductsTable();
+      });
+      ////////////////////////////////////////////////////////////////////////////////////
+      /////////////////////////    SALES   //////////////////////////////////////////
+      // Get a reference to the sales-form element
+      var salesForm = document.getElementById("sales-form");
+
+      // Add a submit event listener to the form
+      salesForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        //date
+        var currentDate = new Date();
+        var year = currentDate.getFullYear();
+        var month = ("0" + (currentDate.getMonth() + 1)).slice(-2);
+        var day = ("0" + currentDate.getDate()).slice(-2);
+        var formattedDate = day + "-" + month + "-" + year;
+        var userName = localStorage.getItem("email");
+        // Update the selected customer ID
+        selectedCustomerId = customerDropdown.value;
+
+        // Open a connection to the salesDB database
+        var request = window.indexedDB.open("salesDB", 1);
+
+        // Add the form data to the salesStore object store
+        request.onsuccess = function (event) {
+          var db = event.target.result;
+          var transaction = db.transaction(["salesStore"], "readwrite");
+          var salesStore = transaction.objectStore("salesStore");
+          console.log(" in submit: ", selectedCustomerId); // this gives null
+          var sale = {
+            sales_id: Math.floor(Math.random() * 1000000000), // generate a unique id
+            sale_date: formattedDate,
+            returnedQuantity: "",
+            actualSaleAmount: totalAmount,
+            returnedAmount: "",
+            advance: totalAmount,
+            userName: userName,
+            customerId: selectedCustomerId,
+            saleRecordDTOS: selectedProductArray,
+          };
+          var request = salesStore.add(sale);
+          request.onsuccess = function (event) {
+            console.log("Sale data saved successfully");
+            selectedProductArray.length = 0; // reset the selectedProductArray to an empty array
+            salesForm.reset();
+          };
+          request.onerror = function (event) {
+            console.log("Error saving sale data:", event.target.error);
+          };
+        };
+
+        // Log errors
+        request.onerror = function (event) {
+          console.log("Error opening database:", event.target.error);
+        };
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // Generate the invoice
+        generateInvoice(formattedDate, quantity, totalAmount);
+      });
+      function generateInvoice(salesDate, quantity, totalAmount) {
+        // Create the invoice HTML template
+        // create a new iframe
+        const invoiceTemplate = `
+  <html>
+    <head>
+      <style>
+        /* Styles for the invoice layout */
+        @page {
+          size: 8.5in 11in;
+          margin: 0.5in;
+        }
+        .header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 30px;
+        }
+        .logo {
+          width: 150px;
+        }
+        .company-info {
+          max-width: 50%;
+        }
+        .company-info h3 {
+          margin: 0 0 10px;
+        }
+        .company-info p {
+          margin: 0;
+        }
+        .invoice-info {
+          text-align: right;
+        }
+        .invoice-info h1 {
+          margin: 0 0 5px;
+          font-size: 24px;
+        }
+        .invoice-info p {
+          margin: 0;
+        }
+        table {
+          margin: 0 auto;
+        }
+        .footer {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          text-align: center;
+          font-size: 14px;
+          color: #999;
+        }
+      </style>
+    </head>
+    <body>
+      <header class="header">
+        <img class="logo" src="file:///logo192.png" alt="Your Company Logo">
+        <div class="company-info">
+          <h3>Your Company Name</h3>
+          <p>Your Company Address</p>
+          <p>Your Company City, State Zip</p>
+          <p>Your Company Phone Number</p>
+        </div>
+        <div class="invoice-info">
+          <h1>INVOICE</h1>
+          <p>Invoice Number: #</p>
+          <p>Invoice Date: </p>
+        </div>
+      </header>
+      <main>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Description</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${selectedProductArrayForPrint
+              .map(
+                (item) => `
+              <tr>
+                <td>${item.name}</td>
+                <td>${item.description}</td>
+                <td>${item.quantity}</td>
+                <td>${item.price}</td>
+                <td>${item.total}</td>
+              </tr>
+            `
+              )
+              .join("")}
+          </tbody>
+        </table>
+        <div class="totals">
+          <p>Subtotal: ${totalAmount}</p>
+          <p>GST: </p>
+          <p>Shipping: </p>
+          <h2>Total: ${totalAmount}</h2>
+        </div>
+      </main>
+      <footer class="footer">
+        <p>Thank you for your business!</p>
+        <p>Invoice generated by Your Company Name</p>
+      </footer>
+    </body>
+  </html>
+`;
+        var iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+        // set the content of the iframe
+        iframe.contentDocument.write(invoiceTemplate);
+        // print the iframe content
+        iframe.contentWindow.print();
+      }
+    </script>
+  </body>
+</html>

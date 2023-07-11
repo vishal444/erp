@@ -1,0 +1,23 @@
+{
+    "description":"descriptioneiiiii",
+    "productName":"pNameeeeeei",
+    "sales": "വിൽപ്പന",
+    "purchases": "വാങ്ങലുകൾ",
+    "inventory": "സ്റ്റോക്ക് വിവരങ്ങൾ",
+    "data_entry": "ഡാറ്റ എൻട്രി",
+    "add_product": "ഉൽപ്പന്നം ചേർക്കുക",
+    "add_product_list": "ലിസ്റ്റിലേക്ക് ഉൽപ്പന്നം ചേർക്കുക",
+    "quantity":"എണ്ണം നൽകുക",
+    "price": "വില നൽകുക",
+    "expenses": "പ്രതിമാസ ചെലവുകൾ",
+    "bulk_data": "ബൾക്ക് ഡാറ്റ എൻട്രി",
+    "select_product": "ഉൽപ്പന്നം തിരഞ്ഞെടുക്കുക",
+    "returns": "തിരികെ വന്നത്",
+    "purchase_returns": "തിരികെ വന്നത്",
+    "on_hold": "പൂർത്തിയാകാത്ത പേയ്മെന്റ്",
+    "print_invoice":"ഇൻവോയ്സ് പ്രിന്റ് ചെയ്യുക",
+    "select_customer": "കസ്റ്റമർ തിരഞ്ഞെടുക്കുക",
+    "payment_received": "ലഭിച്ച പേയ്മെന്റ് തുക",
+    "enterStockDetails": "സ്റ്റോക്ക് വിശദാംശങ്ങൾ നൽകുക",
+    "graph": "വിൽപ്പന ഗ്രാഫ്"
+}
