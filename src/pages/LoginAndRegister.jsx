@@ -92,7 +92,7 @@ function LoginAndRegister() {
           <br />
         </div>
       </form>
-      <lable>{isLogin ? "Dont have an account" : "Already have an account"}</lable>
+      <label>{isLogin ? "Dont have an account" : "Already have an account"}</label>
       <button onClick={handleToggle} className="button">
         {isLogin ? "Register" : "Login"}
       </button>

@@ -4,7 +4,6 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Forecast from "../src/pages/Forecast";
 import Sales from "../src/pages/Sales";
-import ExcelUploader from "./pages/ExcelUploader";
 import Inventory from "./pages/Inventory";
 import Product from "./pages/Product";
 import Tabs from "./pages/Tabs";
@@ -25,7 +24,6 @@ function App() {
           <Route exact path="/sales" element={<Sales />} />
           <Route exact path="/forecast" element={<Forecast />} />
           <Route exact path="/expenses" element={<Expenses />} />
-          <Route exact path="/excelUpload" element={<ExcelUploader />} />
           <Route exact path="/inventory" element={<Inventory />} />
           <Route exact path="/product" element={<Product />} />
           <Route exact path="/purchase" element={<Purchase />} />
