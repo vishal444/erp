@@ -20,11 +20,11 @@ export default function Sales() {
         },
       };
       const response = await axios.get(
-        `http://localhost:8080/api/erp/sales/graphAll/${userName}`,
+        `http://65.2.176.52:8080/api/erp/sales/graphAll/${userName}`,
         config
       );
       const productsResponse = await axios.get(
-        `http://localhost:8080/api/erp/product/getAll/${userName}`,
+        `http://65.2.176.52:8080/api/erp/product/getAll/${userName}`,
         config
       );
       setProducts(productsResponse.data);
@@ -122,7 +122,7 @@ export default function Sales() {
         },
       };
       const responseByProduct = await axios.get(
-        `http://localhost:8080/api/erp/sales/graphByProduct/${selectedProductId}/${userName}`,
+        `http://65.2.176.52:8080/api/erp/sales/graphByProduct/${selectedProductId}/${userName}`,
         config
       );
       updateChart(responseByProduct.data);
