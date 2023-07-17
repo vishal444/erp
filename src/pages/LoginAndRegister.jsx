@@ -20,7 +20,7 @@ function LoginAndRegister() {
       try {
         // Send login request to the API using Axios
         axios
-          .post("http://65.2.176.52:8080/api/erp/auth/authenticate", {
+          .post("http://65.0.184.31:8080/api/erp/auth/authenticate", {
             email,
             password,
           })
@@ -42,7 +42,7 @@ function LoginAndRegister() {
       try {
         // Send login request to the API using Axios
         axios
-          .post("http://65.2.176.52:8080/api/erp/auth/register", {
+          .post("http://65.0.184.31:8080/api/erp/auth/register", {
             email,
             password,
           })

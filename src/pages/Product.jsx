@@ -53,7 +53,7 @@ export default function Product() {
     async function fetchData() {
       try {
         const productsResponse = await axios.get(
-          `http://65.2.176.52:8080/api/erp/product/getAll/${userName}`,
+          `http://65.0.184.31:8080/api/erp/product/getAll/${userName}`,
           config
         );
         setProductsData(productsResponse.data);
@@ -125,7 +125,7 @@ export default function Product() {
     };
     try {
       const response = await axios.post(
-        "http://65.2.176.52:8080/api/erp/product/add",
+        "http://65.0.184.31:8080/api/erp/product/add",
         updatedProduct,
         config
       );
@@ -152,7 +152,7 @@ export default function Product() {
     };
     try {
       await axios.put(
-        `http://65.2.176.52:8080/api/erp/productUpdate/${id}/${userName}?name=${name}&gst=${gst}&price=${price}`,
+        `http://65.0.184.31:8080/api/erp/productUpdate/${id}/${userName}?name=${name}&gst=${gst}&price=${price}`,
         config
       );
     } catch (error) {
