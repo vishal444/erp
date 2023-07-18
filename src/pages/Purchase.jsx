@@ -55,7 +55,7 @@ function Purchase() {
       };
       try {
         const productsResponse = await axios.get(
-          `http://65.0.184.31:8080/api/erp/product/getAll/${userName}`,
+          `http://43.204.30.111:8080/api/erp/product/getAll/${userName}`,
           config
         );
         setProducts(productsResponse.data);
@@ -66,7 +66,7 @@ function Purchase() {
         }));
         setTransformedProducts(temp);
         const purchaseResponse = await axios.get(
-          `http://65.0.184.31:8080/api/erp/purchases/${userName}`,
+          `http://43.204.30.111:8080/api/erp/purchases/${userName}`,
           config
         );
         setPurchase(purchaseResponse.data);
@@ -77,7 +77,7 @@ function Purchase() {
         }));
         setTransformedPurchases(purchaseTemp);
         const purchaseOutstandingResponse = await axios.get(
-          `http://65.0.184.31:8080/api/erp/purchaseOutstanding/${userName}`,
+          `http://43.204.30.111:8080/api/erp/purchaseOutstanding/${userName}`,
           config
         );
         setPurchaseOutstanding(purchaseOutstandingResponse.data);
@@ -116,7 +116,7 @@ function Purchase() {
     setSelectedPurchaseId(newSelectedPurchaseId);
     // Make GET request to fetch the selected sale data
     const getSelectedPurchaseResponse = await axios.get(
-      `http://65.0.184.31:8080/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
+      `http://43.204.30.111:8080/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedPurchaseResponse.data);
@@ -255,7 +255,7 @@ function Purchase() {
 
     try {
       const purchaseAdd = await axios.post(
-        "http://65.0.184.31:8080/api/erp/purchases/add",
+        "http://43.204.30.111:8080/api/erp/purchases/add",
         data,
         config
       );
@@ -269,7 +269,7 @@ function Purchase() {
       // Update inventory for all products in the purchase
       for (const item of selectedProductArray) {
         const inventoryPurchaseUdpate = await axios.put(
-          `http://65.0.184.31:8080/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
+          `http://43.204.30.111:8080/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
           null,
           configForPut
         );
@@ -302,14 +302,14 @@ function Purchase() {
     };
     try {
       const inventoryUpdateResponse = await axios.put(
-        `http://65.0.184.31:8080/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `http://43.204.30.111:8080/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(inventoryUpdateResponse.data);
 
       const purchaseUpdateResponse = await axios.put(
-        `http://65.0.184.31:8080/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `http://43.204.30.111:8080/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
@@ -337,7 +337,7 @@ function Purchase() {
     };
     try {
       const response = await axios.put(
-        `http://65.0.184.31:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
+        `http://43.204.30.111:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
         null,
         configForPut
       );

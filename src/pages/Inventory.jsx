@@ -15,7 +15,7 @@ function Listing() {
     };
 
     axios
-      .get(`http://65.0.184.31:8080/api/erp/inventory/getAll/${userName}`, config)
+      .get(`http://43.204.30.111:8080/api/erp/inventory/getAll/${userName}`, config)
       .then((response) => {
         setInventory(response.data);
       })

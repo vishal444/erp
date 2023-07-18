@@ -59,12 +59,12 @@ function Inputs() {
     async function fetchData() {
       try {
         const assetResponse = await axios.get(
-          `http://65.0.184.31:8080/api/erp/assets/${userName}`,
+          `http://43.204.30.111:8080/api/erp/assets/${userName}`,
           config
         );
         setAssetData(assetResponse.data);
         const companyResponse = await axios.get(
-          `http://65.0.184.31:8080/api/erp/company/${userName}`,
+          `http://43.204.30.111:8080/api/erp/company/${userName}`,
           config
         );
         setCompanyData(companyResponse.data);
@@ -115,7 +115,7 @@ function Inputs() {
     };
     try {
       const response = await axios.post(
-        "http://65.0.184.31:8080/api/erp/customer/add",
+        "http://43.204.30.111:8080/api/erp/customer/add",
         customerDetail,
         config
       );
@@ -148,7 +148,7 @@ function Inputs() {
     };
     try {
       const response = await axios.post(
-        "http://65.0.184.31:8080/api/erp/employee/add",
+        "http://43.204.30.111:8080/api/erp/employee/add",
         empDetail,
         config
       );
@@ -183,7 +183,7 @@ function Inputs() {
     };
     try {
       const response = await axios.post(
-        "http://65.0.184.31:8080/api/erp/loan/add",
+        "http://43.204.30.111:8080/api/erp/loan/add",
         loanDetail,
         config
       );
@@ -212,7 +212,7 @@ function Inputs() {
     };
     try {
       const response = await axios.post(
-        "http://65.0.184.31:8080/api/erp/rent/add",
+        "http://43.204.30.111:8080/api/erp/rent/add",
         rentDetail,
         config
       );
@@ -242,7 +242,7 @@ function Inputs() {
     };
     try {
       const response = await axios.post(
-        "http://65.0.184.31:8080/api/erp/OD/add",
+        "http://43.204.30.111:8080/api/erp/OD/add",
         odDetail,
         config
       );
@@ -278,7 +278,7 @@ function Inputs() {
     };
     try {
       const response = await axios.post(
-        "http://65.0.184.31:8080/api/erp/company/save",
+        "http://43.204.30.111:8080/api/erp/company/save",
         companyDetail,
         config
       );
@@ -314,7 +314,7 @@ function Inputs() {
     };
     try {
       const response = await axios.post(
-        "http://65.0.184.31:8080/api/erp/asset/save",
+        "http://43.204.30.111:8080/api/erp/asset/save",
         assetDetail,
         config
       );
@@ -338,7 +338,7 @@ function Inputs() {
     };
     try {
       await axios.put(
-        `http://65.0.184.31:8080/api/erp/asset/edit/${colName}/${value}/${userName}`,
+        `http://43.204.30.111:8080/api/erp/asset/edit/${colName}/${value}/${userName}`,
         null,
         config
       );
@@ -359,7 +359,7 @@ function Inputs() {
     };
     try {
       await axios.put(
-        `http://65.0.184.31:8080/api/erp/company/edit/${colName}/${userName}?name=${name}&address=${address}&zip=${zip}&phone=${phone_Number}&gstN=${gst_Number}`,
+        `http://43.204.30.111:8080/api/erp/company/edit/${colName}/${userName}?name=${name}&address=${address}&zip=${zip}&phone=${phone_Number}&gstN=${gst_Number}`,
         null,
         config
       );
