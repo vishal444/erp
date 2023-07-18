@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import i18next from "i18next";
 import Expenses from "./Expenses";
 import Forecast from "./Forecast";
-import jwt_decode from "jwt-decode";
+// import jwt_decode from "jwt-decode";
 import SideMenu from "./SideMenu";
 import Product from "./Product";
 
@@ -22,7 +22,7 @@ export default function Tabs() {
       i18next.changeLanguage(lang);
     }
     // Check if token is expired on component mount
-    checkTokenExpiration();
+    // checkTokenExpiration();
   }, []);
 
   const handleLanguage = (e) => {
@@ -31,20 +31,20 @@ export default function Tabs() {
     localStorage.setItem("lang", lang);
   };
 
-  const checkTokenExpiration = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken = jwt_decode(token);
-      const currentTime = Math.floor(Date.now() / 1000);
-      if (decodedToken.exp < currentTime) {
-        // Token is expired
-        // Perform necessary actions (e.g., redirect to login)
-        localStorage.removeItem("token");
-        localStorage.removeItem("email");
-        window.location.href = "/";
-      }
-    }
-  };
+  // const checkTokenExpiration = () => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     const decodedToken = jwt_decode(token);
+  //     const currentTime = Math.floor(Date.now() / 1000);
+  //     if (decodedToken.exp < currentTime) {
+  //       // Token is expired
+  //       // Perform necessary actions (e.g., redirect to login)
+  //       localStorage.removeItem("token");
+  //       localStorage.removeItem("email");
+  //       window.location.href = "/";
+  //     }
+  //   }
+  // };
   const tabItems = [
     { id: 1, label: t("sales") },
     { id: 2, label: t("purchases") },

@@ -64,22 +64,22 @@ export default function Product() {
     }
     fetchData();
     // Check if token is expired on component mount
-    checkTokenExpiration();
+    // checkTokenExpiration();
   }, []);
-  const checkTokenExpiration = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken = jwt_decode(token);
-      const currentTime = Math.floor(Date.now() / 1000);
-      if (decodedToken.exp < currentTime) {
-        // if Token is expired
-        // Perform necessary actions (e.g., redirect to login)
-        localStorage.removeItem("token");
-        localStorage.removeItem("email");
-        window.location.href = "/";
-      }
-    }
-  };
+  // const checkTokenExpiration = () => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     const decodedToken = jwt_decode(token);
+  //     const currentTime = Math.floor(Date.now() / 1000);
+  //     if (decodedToken.exp < currentTime) {
+  //       // if Token is expired
+  //       // Perform necessary actions (e.g., redirect to login)
+  //       localStorage.removeItem("token");
+  //       localStorage.removeItem("email");
+  //       window.location.href = "/";
+  //     }
+  //   }
+  // };
   // console.log("product data:", productData);
   const handleOptionChange = (event) => {
     setSelectedOptionForm(event.target.value);
