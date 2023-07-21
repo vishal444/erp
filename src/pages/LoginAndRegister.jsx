@@ -7,6 +7,7 @@ function LoginAndRegister() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [redirectUrl, setRedirectUrl] = useState("");
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
@@ -25,46 +26,57 @@ function LoginAndRegister() {
             password,
           })
           .then((response) => {
-            // If login is successful, save the token to local storage
-            localStorage.setItem("token", response.data.token);
-            localStorage.setItem("email", email);
-            console.log(response);
-            // Redirect the user to the home page or their dashboard
-            window.location.href = "/tabs";
+            if (response.status === 200) {
+              // If login is successful, save the token to local storage
+              localStorage.setItem("token", response.data.token);
+              localStorage.setItem("email", email);
+              setRedirectUrl("/tabs");
+            } else {
+              setErrorMessage("Login failed. Please check your credentials.");
+            }
           })
           .catch((error) => {
             console.log(error);
+            setErrorMessage("Login failed. Please try again later.");
           });
       } catch (error) {
         setErrorMessage(error.response.data.message);
       }
     } else {
       try {
-        // Send login request to the API using Axios
+        // Send registration request to the API using Axios
         axios
           .post("https://13.127.41.16:8080/api/erp/auth/register", {
             email,
             password,
           })
           .then((response) => {
-            // If login is successful, save the token to local storage
-            localStorage.setItem("token", response.data.token);
-            localStorage.setItem("email", email);
-            // Redirect the user to the home page or their dashboard
-            window.location.href = "/massInput";
+            if (response.status === 200) {
+              // If registration is successful, save the token to local storage
+              localStorage.setItem("token", response.data.token);
+              localStorage.setItem("email", email);
+              setRedirectUrl("/massInput");
+            } else {
+              setErrorMessage("Registration failed. Please try again later.");
+            }
           })
           .catch((error) => {
             console.log(error);
+            setErrorMessage("Registration failed. Please try again later.");
           });
-        // handle response here, e.g. set user data in state or local storage
       } catch (error) {
         setErrorMessage(error.response.data.message);
       }
     }
   };
 
+  // Redirect logic
+  if (redirectUrl) {
+    window.location.href = redirectUrl;
+  }
+
   return (
-    <div className="listing-container-ash-notwide" >
+    <div className="listing-container-ash-notwide">
       <form onSubmit={handleSubmit} style={{ paddingTop: "50px" }}>
         <div className="listing-container">
           <h1>{isLogin ? "Login" : "Register"}</h1>
