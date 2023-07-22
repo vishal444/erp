@@ -15,7 +15,7 @@ function Listing() {
     };
 
     axios
-      .get(`http://13.127.41.16:8080/api/erp/inventory/getAll/${userName}`, config)
+      .get(`https://bisbuddy.online:8080/api/erp/inventory/getAll/${userName}`, config)
       .then((response) => {
         setInventory(response.data);
       })
