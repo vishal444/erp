@@ -75,7 +75,7 @@ function Expenses() {
     };
     // fetch the list of employees and set the state
     axios
-      .get(`https://bisbuddy.online:8080/api/erp/employees/${userName}`, config)
+      .get(`https://bisbuddy.xyz:8080/api/erp/employees/${userName}`, config)
       .then((response) => {
         setEmployees(response.data);
         // console.log("data :",response.data);
@@ -85,7 +85,7 @@ function Expenses() {
       });
     // fetch the list of loan and set the state
     axios
-      .get(`https://bisbuddy.online:8080/api/erp/loans/${userName}`, config)
+      .get(`https://bisbuddy.xyz:8080/api/erp/loans/${userName}`, config)
       .then((response) => {
         setLoans(response.data);
         // console.log("data :",response.data);
@@ -95,7 +95,7 @@ function Expenses() {
       });
     // fetch the list of employees and set the state
     axios
-      .get(`https://bisbuddy.online:8080/api/erp/rent/${userName}`, config)
+      .get(`https://bisbuddy.xyz:8080/api/erp/rent/${userName}`, config)
       .then((response) => {
         setRent(response.data);
         // console.log("data :",response.data);
@@ -139,7 +139,7 @@ function Expenses() {
         },
       };
       const response = await axios.get(
-        `https://bisbuddy.online:8080/api/erp/employeeById/${selectedEmployeeIdTemp}`,
+        `https://bisbuddy.xyz:8080/api/erp/employeeById/${selectedEmployeeIdTemp}`,
         config
       );
       setSelectedEmployee(response.data);
@@ -160,7 +160,7 @@ function Expenses() {
         },
       };
       const response = await axios.get(
-        `https://bisbuddy.online:8080/api/erp/loanById/${selectedLoanIdTemp}`,
+        `https://bisbuddy.xyz:8080/api/erp/loanById/${selectedLoanIdTemp}`,
         config
       );
       setSelectedLoan(response.data);
@@ -181,7 +181,7 @@ function Expenses() {
         },
       };
       const response = await axios.get(
-        `https://bisbuddy.online:8080/api/erp/rentById/${selectedRentIdTemp}`,
+        `https://bisbuddy.xyz:8080/api/erp/rentById/${selectedRentIdTemp}`,
         config
       );
       console.log("rent data:", response);
@@ -226,7 +226,7 @@ function Expenses() {
     };
     await axios
       .post(
-        "https://bisbuddy.online:8080/api/erp/salaryPayment/save",
+        "https://bisbuddy.xyz:8080/api/erp/salaryPayment/save",
         data,
         configForPut
       )
@@ -272,7 +272,7 @@ function Expenses() {
     };
     await axios
       .post(
-        "https://bisbuddy.online:8080/api/erp/loanPayment/save",
+        "https://bisbuddy.xyz:8080/api/erp/loanPayment/save",
         dataForLoan,
         configForPut
       )
@@ -319,7 +319,7 @@ function Expenses() {
     // create a new salary record with the selected employee id, salary and month
     await axios
       .post(
-        "https://bisbuddy.online:8080/api/erp/rentPayment/save",
+        "https://bisbuddy.xyz:8080/api/erp/rentPayment/save",
         dataForRent,
         configForPut
       )
@@ -376,7 +376,7 @@ function Expenses() {
     };
     await axios
       .post(
-        "https://bisbuddy.online:8080/api/erp/monthlyIncomeExpense/save",
+        "https://bisbuddy.xyz:8080/api/erp/monthlyIncomeExpense/save",
         dataForOtherExpenses,
         configForPut
       )
@@ -414,7 +414,7 @@ function Expenses() {
     // create a new salary record with the selected employee id, salary and month
     await axios
       .post(
-        "https://bisbuddy.online:8080/api/erp/overDraftPayment/save",
+        "https://bisbuddy.xyz:8080/api/erp/overDraftPayment/save",
         dataForOD,
         configForPut
       )
@@ -444,7 +444,7 @@ function Expenses() {
     };
     await axios
       .put(
-        `https://bisbuddy.online:8080/api/erp/capitalDraw/${capitalDrawings}/${userName}`,
+        `https://bisbuddy.xyz:8080/api/erp/capitalDraw/${capitalDrawings}/${userName}`,
         configForPut
       )
       .then((response) => {
@@ -466,7 +466,7 @@ function Expenses() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.online:8080/api/erp/tAC/generate/${currentYear}`,
+        `https://bisbuddy.xyz:8080/api/erp/tAC/generate/${currentYear}`,
         null,
         configForPut
       );
@@ -487,7 +487,7 @@ function Expenses() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.online:8080/api/erp/pAndL/generate/${currentYear}`,
+        `https://bisbuddy.xyz:8080/api/erp/pAndL/generate/${currentYear}`,
         null,
         configForPut
       );
@@ -508,7 +508,7 @@ function Expenses() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.online:8080/api/erp/balanceSheet/generate/${currentYear}`,
+        `https://bisbuddy.xyz:8080/api/erp/balanceSheet/generate/${currentYear}`,
         null,
         configForPut
       );

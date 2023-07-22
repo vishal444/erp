@@ -21,7 +21,7 @@ function LoginAndRegister() {
       try {
         // Send login request to the API using Axios
         axios
-          .post("https://bisbuddy.online:8080/api/erp/auth/authenticate", {
+          .post("https://bisbuddy.xyz:8080/api/erp/auth/authenticate", {
             email,
             password,
           })
@@ -46,7 +46,7 @@ function LoginAndRegister() {
       try {
         // Send registration request to the API using Axios
         axios
-          .post("https://bisbuddy.online:8080/api/erp/auth/register", {
+          .post("https://bisbuddy.xyz:8080/api/erp/auth/register", {
             email,
             password,
           })

@@ -20,11 +20,11 @@ export default function Sales() {
         },
       };
       const response = await axios.get(
-        `https://bisbuddy.online:8080/api/erp/sales/graphAll/${userName}`,
+        `https://bisbuddy.xyz:8080/api/erp/sales/graphAll/${userName}`,
         config
       );
       const productsResponse = await axios.get(
-        `https://bisbuddy.online:8080/api/erp/product/getAll/${userName}`,
+        `https://bisbuddy.xyz:8080/api/erp/product/getAll/${userName}`,
         config
       );
       setProducts(productsResponse.data);
@@ -122,7 +122,7 @@ export default function Sales() {
         },
       };
       const responseByProduct = await axios.get(
-        `https://bisbuddy.online:8080/api/erp/sales/graphByProduct/${selectedProductId}/${userName}`,
+        `https://bisbuddy.xyz:8080/api/erp/sales/graphByProduct/${selectedProductId}/${userName}`,
         config
       );
       updateChart(responseByProduct.data);

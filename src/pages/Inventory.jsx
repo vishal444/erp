@@ -15,7 +15,7 @@ function Listing() {
     };
 
     axios
-      .get(`https://bisbuddy.online:8080/api/erp/inventory/getAll/${userName}`, config)
+      .get(`https://bisbuddy.xyz:8080/api/erp/inventory/getAll/${userName}`, config)
       .then((response) => {
         setInventory(response.data);
       })
