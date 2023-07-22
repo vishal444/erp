@@ -66,7 +66,7 @@ function Sales() {
     async function fetchData() {
       try {
         const productsResponse = await axios.get(
-          `http://bisbudyy.xyz:8080/api/erp/product/getAll/${userName}`,
+          `http://bisbuddy.xyz:8080/api/erp/product/getAll/${userName}`,
           config
         );
 
@@ -86,7 +86,7 @@ function Sales() {
         );
         setInventory(inventoryResponse.data);
         const salesResponse = await axios.get(
-          `http://bisbudyy.xyz:8080/api/erp/sales/${userName}`,
+          `http://bisbuddy.xyz:8080/api/erp/sales/${userName}`,
           config
         );
         setSales(salesResponse.data);
@@ -100,7 +100,7 @@ function Sales() {
         }
 
         const salesOutstandingResponse = await axios.get(
-          `http://bisbudyy.xyz:8080/api/erp/salesOutstanding/${userName}`,
+          `http://bisbuddy.xyz:8080/api/erp/salesOutstanding/${userName}`,
           config
         );
         setSalesOutstanding(salesOutstandingResponse.data);
@@ -115,12 +115,12 @@ function Sales() {
           setTransformedSalesOutstanding(salesOutstandingTemp);
         }
         const customersResponse = await axios.get(
-          `http://bisbudyy.xyz:8080/api/erp/customer/getAll/${userName}`,
+          `http://bisbuddy.xyz:8080/api/erp/customer/getAll/${userName}`,
           config
         );
         setCustomers(customersResponse.data);
         const companyResponse = await axios.get(
-          `http://bisbudyy.xyz:8080/api/erp/company/${userName}`,
+          `http://bisbuddy.xyz:8080/api/erp/company/${userName}`,
           config
         );
         setCompanyData(companyResponse.data);
@@ -245,7 +245,7 @@ function Sales() {
     setSelectedSalesId(newSelectedSalesId);
     // Make GET request to fetch the selected sale data
     const getSelectedSaleResponse = await axios.get(
-      `http://bisbudyy.xyz:8080/api/erp/salesById/${newSelectedSalesId}/${userName}`
+      `http://bisbuddy.xyz:8080/api/erp/salesById/${newSelectedSalesId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedSaleResponse.data);
@@ -499,7 +499,7 @@ function Sales() {
     };
     try {
       const addSaleResponse = await axios.post(
-        "http://bisbudyy.xyz:8080/api/erp/sales/add",
+        "http://bisbuddy.xyz:8080/api/erp/sales/add",
         salesData,
         config
       );
@@ -516,7 +516,7 @@ function Sales() {
       // Update inventory for all products in the sale
       for (const item of selectedProductArray) {
         const updateInventoryResponse = await axios.put(
-          `http://bisbudyy.xyz:8080/api/erp/inventory/sale/update/${item.product}/${userName}?quantity=${item.quantity}`,
+          `http://bisbuddy.xyz:8080/api/erp/inventory/sale/update/${item.product}/${userName}?quantity=${item.quantity}`,
           null,
           configForPut
         );
@@ -549,14 +549,14 @@ function Sales() {
     };
     try {
       const updateInventoryResponse = await axios.put(
-        `http://bisbudyy.xyz:8080/api/erp/inventory/sale/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `http://bisbuddy.xyz:8080/api/erp/inventory/sale/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(updateInventoryResponse.data);
 
       const updateSalesReturnResponse = await axios.put(
-        `http://bisbudyy.xyz:8080/api/erp/sales/return/${selectedSalesId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `http://bisbuddy.xyz:8080/api/erp/sales/return/${selectedSalesId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
@@ -580,7 +580,7 @@ function Sales() {
     };
     try {
       const response = await axios.put(
-        `http://bisbudyy.xyz:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${restOfAdvance}`,
+        `http://bisbuddy.xyz:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${restOfAdvance}`,
         null,
         configForPut
       );

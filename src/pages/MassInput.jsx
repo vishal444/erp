@@ -68,7 +68,7 @@ function MassInput() {
     });
     // send the productData array to the backend
     axios
-      .post("http://bisbudyy.xyz:8080/api/erp/productList/add", updatedProductData)
+      .post("http://bisbuddy.xyz:8080/api/erp/productList/add", updatedProductData)
       .then((response) => {
         console.log("Data saved successfully!", response.data);
         // reset the form and state variables after successful submission
