@@ -53,7 +53,7 @@ export default function Product() {
     async function fetchData() {
       try {
         const productsResponse = await axios.get(
-          `http://bisbuddy.xyz:8080/api/erp/product/getAll/${userName}`,
+          `http://13.127.41.16:8080/api/erp/product/getAll/${userName}`,
           config
         );
         setProductsData(productsResponse.data);
@@ -125,7 +125,7 @@ export default function Product() {
     };
     try {
       const response = await axios.post(
-        "http://bisbuddy.xyz:8080/api/erp/product/add",
+        "http://13.127.41.16:8080/api/erp/product/add",
         updatedProduct,
         config
       );
@@ -152,7 +152,7 @@ export default function Product() {
     };
     try {
       await axios.put(
-        `http://bisbuddy.xyz:8080/api/erp/productUpdate/${id}/${userName}?name=${name}&gst=${gst}&price=${price}`,
+        `http://13.127.41.16:8080/api/erp/productUpdate/${id}/${userName}?name=${name}&gst=${gst}&price=${price}`,
         config
       );
     } catch (error) {
