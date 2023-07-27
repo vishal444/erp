@@ -81,7 +81,7 @@ function Sales() {
         }
 
         const inventoryResponse = await axios.get(
-          `https://localhost:8080/api/erp/inventory/getAll/${userName}`,
+          `https://bisbuddy.xyz/api/erp/inventory/getAll/${userName}`,
           config
         );
         setInventory(inventoryResponse.data);
