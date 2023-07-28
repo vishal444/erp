@@ -55,7 +55,7 @@ function LoginAndRegister() {
               // If registration is successful, save the token to local storage
               localStorage.setItem("token", response.data.token);
               localStorage.setItem("email", email);
-              setRedirectUrl("/tabs");
+              setRedirectUrl("/massInput");
             } else {
               setErrorMessage("Registration failed. Please try again later.");
             }
