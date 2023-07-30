@@ -156,7 +156,7 @@ export default function Tabs() {
           Log out
         </button>
       </div>
-      {showAddProductsPopup && (
+      {showAddProductsPopup && productData.length === 0 && (
         <div
           style={{
             position: "fixed",
@@ -192,7 +192,7 @@ export default function Tabs() {
         </div>
       )}
       {/* Add the overlay to blur the background */}
-      {showAddProductsPopup && (
+      {showAddProductsPopup && productData.length === 0 && (
         <div
           style={{
             position: "fixed",
