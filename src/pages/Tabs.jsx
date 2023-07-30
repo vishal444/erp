@@ -43,7 +43,7 @@ export default function Tabs() {
     async function fetchData() {
       try {
         const productsResponse = await axios.get(
-          `http://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
           config
         );
         setProductsData(productsResponse.data);
