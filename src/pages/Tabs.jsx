@@ -26,6 +26,32 @@ export default function Tabs() {
     // checkTokenExpiration();
     // Get the token from localStorage
     // Set up the Axios config object with the Authorization header and data object
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    async function fetchData() {
+      try {
+        const productsResponse = await axios.get(
+          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          config
+        );
+        setProductsData(productsResponse.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchData().then(() => {
+      // Show the pop-up after a delay of 2 seconds
+      setTimeout(() => {
+        if (productData.length === 0) {
+          setShowAddProductsPopup(true);
+        }
+      }, 2000);
+    });
   }, []);
 
   const handleLanguage = (e) => {
@@ -123,6 +149,53 @@ export default function Tabs() {
           Log out
         </button>
       </div>
+      {showAddProductsPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "white",
+            padding: "20px",
+            borderRadius: "10px",
+            zIndex: "999",
+            display: "flex", // Use flexbox to align buttons horizontally
+            flexDirection: "column", // Align buttons vertically in a column
+            alignItems: "center", // Center buttons horizontally
+          }}
+        >
+          <p>Your product data is empty.</p>
+          <div>
+            <button
+              style={{ marginRight: "10px" }} // Add some spacing between the buttons
+              onClick={() => setShowAddProductsPopup(false)}
+              className="button"
+            >
+              Close
+            </button>
+            <button onClick={() => (window.location.href = "/massInput")} className="button">
+              Add Products
+            </button>{" "}
+            {/* Replace '/add-products' with the actual route where users can add products */}
+          </div>
+        </div>
+      )}
+      {/* Add the overlay to blur the background */}
+      {showAddProductsPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.6)", // Semi-transparent background color
+            backdropFilter: "blur(5px)", // Blur effect
+            zIndex: "998", // Lower zIndex to place it behind the pop-up
+          }}
+        ></div>
+      )}
       <button
         onClick={toggleSidebar}
         className="sidebar-toggle-btn"
