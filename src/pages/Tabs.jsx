@@ -15,13 +15,17 @@ export default function Tabs() {
   const [productData, setProductsData] = useState([]);
   const [showAddProductsPopup, setShowAddProductsPopup] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userName = localStorage.getItem("email");
+   // Use this useEffect hook to change the language when the "Select Language" dropdown is changed
+   useEffect(() => {
     const lang = localStorage.getItem("lang");
     if (lang) {
       i18next.changeLanguage(lang);
     }
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userName = localStorage.getItem("email");
     // Check if token is expired on component mount
     // checkTokenExpiration();
     // Get the token from localStorage
@@ -52,7 +56,7 @@ export default function Tabs() {
         }
       }, 2000);
     });
-  }, [productData]);
+  }, []);
 
   const handleLanguage = (e) => {
     const lang = e.target.value;
