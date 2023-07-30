@@ -33,9 +33,6 @@ function Purchase() {
 
   const { t } = useTranslation();
 
-  const handleOptionChange = (event) => {
-    setSelectedOptionForm(event.target.value);
-  };
   useEffect(() => {
     ////// for language ///////////
     const lang = localStorage.getItem("lang");
@@ -101,6 +98,14 @@ function Purchase() {
     setProductsOfReturn([]);
     setQuantityAfterReturn("");
   }, [selectedOptionForm]);
+
+  // const handleOptionChange = (event) => {
+  //   setSelectedOptionForm(event.target.value);
+  // };
+  const handleOptionChange = (option) => {
+    setSelectedOptionForm(option);
+  };
+  
   
   // const handleProductIdChange = (e) => {
   //   setSelectedProductId(e.target.value);
@@ -627,36 +632,52 @@ function Purchase() {
 
   return (
     <div className="listing-container-ash">
-      <div>
-        <label>
-          <input
-            type="radio"
-            value="purchase"
-            checked={selectedOptionForm === "purchase"}
-            onChange={handleOptionChange}
-          />
-          {t("purchases")}
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="return"
-            checked={selectedOptionForm === "return"}
-            onChange={handleOptionChange}
-          />
-          {t("purchase_returns")}
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="onHold"
-            checked={selectedOptionForm === "onHold"}
-            onChange={handleOptionChange}
-          />
-          {t("on_hold")}
-        </label>
+      <div className="row">
+        <div className="col-sm-3">
+          <div className="btn-group-vertical">
+            <button
+              type="button"
+              className={`btn btn-secondary ${
+                selectedOptionForm === "sales" && "active"
+              }`}
+              style={{
+                backgroundColor:
+                  selectedOptionForm === "purchase" ? "black" : "", fontWeight: "900",
+              }}
+              onClick={() => handleOptionChange("purchase")}
+            >
+              make new purchase
+            </button>
+            <button
+              type="button"
+              className={`btn btn-secondary ${
+                selectedOptionForm === "purchase" && "active"
+              }`}
+              style={{
+                backgroundColor:
+                  selectedOptionForm === "return" ? "black" : "", fontWeight: "900",
+              }}
+              onClick={() => handleOptionChange("return")}
+            >
+              make returns
+            </button>
+            <button
+              type="button"
+              className={`btn btn-secondary ${
+                selectedOptionForm === "onHold" && "active"
+              }`}
+              style={{
+                backgroundColor:
+                  selectedOptionForm === "onHold" ? "black" : "", fontWeight: "900",
+              }}
+              onClick={() => handleOptionChange("onHold")}
+            >
+              payment not completed
+            </button>
+          </div>
+        </div>
+        <div className="col-sm-9">{renderForm()}</div>
       </div>
-      {renderForm()}
     </div>
   );
 }
