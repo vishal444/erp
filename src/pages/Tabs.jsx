@@ -56,7 +56,7 @@ export default function Tabs() {
         }
       }, 2000);
     });
-  }, []);
+  }, [productData]);
 
   const handleLanguage = (e) => {
     const lang = e.target.value;
