@@ -15,8 +15,8 @@ export default function Tabs() {
   const [productData, setProductsData] = useState([]);
   const [showAddProductsPopup, setShowAddProductsPopup] = useState(false);
 
-   // Use this useEffect hook to change the language when the "Select Language" dropdown is changed
-   useEffect(() => {
+  // Use this useEffect hook to change the language when the "Select Language" dropdown is changed
+  useEffect(() => {
     const lang = localStorage.getItem("lang");
     if (lang) {
       i18next.changeLanguage(lang);
@@ -26,6 +26,10 @@ export default function Tabs() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userName = localStorage.getItem("email");
+    const lang = localStorage.getItem("lang");
+    if (lang) {
+      i18next.changeLanguage(lang);
+    }
     // Check if token is expired on component mount
     // checkTokenExpiration();
     // Get the token from localStorage
@@ -39,24 +43,22 @@ export default function Tabs() {
     async function fetchData() {
       try {
         const productsResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `http://localhost:8080/api/erp/product/getAll/${userName}`,
           config
         );
         setProductsData(productsResponse.data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
 
-    fetchData().then(() => {
-        // Show the pop-up after a delay of 2 seconds
+        // Add a delay of 2 seconds before showing the pop-up
         setTimeout(() => {
-          if (productData.length === 0 && !localStorage.getItem("popUpShown")) {
+          if (productsResponse.data.length === 0) {
             setShowAddProductsPopup(true);
-            localStorage.setItem("popUpShown", "true");
           }
         }, 2000);
-    });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
   }, []);
 
   const handleLanguage = (e) => {
