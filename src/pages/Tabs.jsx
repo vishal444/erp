@@ -49,14 +49,15 @@ export default function Tabs() {
     }
 
     fetchData().then(() => {
-      // Show the pop-up after a delay of 2 seconds
-      setTimeout(() => {
-        if (productData.length === 0) {
-          setShowAddProductsPopup(true);
-        }
-      }, 2000);
+        // Show the pop-up after a delay of 2 seconds
+        setTimeout(() => {
+          if (productData.length === 0 && !localStorage.getItem("popUpShown")) {
+            setShowAddProductsPopup(true);
+            localStorage.setItem("popUpShown", "true");
+          }
+        }, 2000);
     });
-  }, [productData]);
+  }, []);
 
   const handleLanguage = (e) => {
     const lang = e.target.value;
