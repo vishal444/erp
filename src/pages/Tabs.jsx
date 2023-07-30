@@ -39,20 +39,8 @@ export default function Tabs() {
           config
         );
         setProductsData(productsResponse.data);
-        setErrorMessage(""); // Clear any previous error message in case the request is successful
       } catch (error) {
         console.error(error);
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          setErrorMessage(error.response.data.message);
-        } else {
-          setErrorMessage(
-            "Failed to fetch product data. Please try again later."
-          );
-        }
       }
     }
 
