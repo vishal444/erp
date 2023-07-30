@@ -39,8 +39,20 @@ export default function Tabs() {
           config
         );
         setProductsData(productsResponse.data);
+        setErrorMessage(""); // Clear any previous error message in case the request is successful
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          setErrorMessage(error.response.data.message);
+        } else {
+          setErrorMessage(
+            "Failed to fetch product data. Please try again later."
+          );
+        }
       }
     }
 
@@ -52,7 +64,7 @@ export default function Tabs() {
         }
       }, 2000);
     });
-  }, []);
+  }, [productData]);
 
   const handleLanguage = (e) => {
     const lang = e.target.value;
@@ -174,7 +186,10 @@ export default function Tabs() {
             >
               Close
             </button>
-            <button onClick={() => (window.location.href = "/massInput")} className="button">
+            <button
+              onClick={() => (window.location.href = "/massInput")}
+              className="button"
+            >
               Add Products
             </button>{" "}
             {/* Replace '/add-products' with the actual route where users can add products */}
