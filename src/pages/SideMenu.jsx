@@ -4,7 +4,7 @@ import Inputs from "./Inputs";
 import Product from "./Product";
 import Expenses from "./Expenses";
 import i18next from "i18next";
-import jwt_decode from "jwt-decode";
+// import jwt_decode from "jwt-decode";
 
 function SideMenu() {
   const [selectedOptionForm, setSelectedOptionForm] = useState("expenses");
@@ -73,7 +73,7 @@ function SideMenu() {
     <div style={{ display: "flex" }}>
       <div
         id="menu"
-        className="listing-container-ash"
+        className="listing-container-ash-sidebar"
         style={{
           width: "20%",
           marginRight: "10px",
