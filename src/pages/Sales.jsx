@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import i18next from "i18next";
 import axios from "axios";
 import Select from "react-select";
+import { RadioGroup, RadioButton } from "react-radio-buttons";
 
 function Sales() {
   const [selectedOptionForm, setSelectedOptionForm] = useState("sales");
@@ -63,7 +64,7 @@ function Sales() {
     async function fetchData() {
       try {
         const productsResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `http://localhost:8080/api/erp/product/getAll/${userName}`,
           config
         );
 
@@ -78,12 +79,12 @@ function Sales() {
         }
 
         const inventoryResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/inventory/getAll/${userName}`,
+          `http://localhost:8080/api/erp/inventory/getAll/${userName}`,
           config
         );
         setInventory(inventoryResponse.data);
         const salesResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/sales/${userName}`,
+          `http://localhost:8080/api/erp/sales/${userName}`,
           config
         );
         setSales(salesResponse.data);
@@ -97,7 +98,7 @@ function Sales() {
         }
 
         const salesOutstandingResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/salesOutstanding/${userName}`,
+          `http://localhost:8080/api/erp/salesOutstanding/${userName}`,
           config
         );
         setSalesOutstanding(salesOutstandingResponse.data);
@@ -112,12 +113,12 @@ function Sales() {
           setTransformedSalesOutstanding(salesOutstandingTemp);
         }
         const customersResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/customer/getAll/${userName}`,
+          `http://localhost:8080/api/erp/customer/getAll/${userName}`,
           config
         );
         setCustomers(customersResponse.data);
         const companyResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/company/${userName}`,
+          `http://localhost:8080/api/erp/company/${userName}`,
           config
         );
         setCompanyData(companyResponse.data);
@@ -254,7 +255,7 @@ function Sales() {
     setSelectedSalesId(newSelectedSalesId);
     // Make GET request to fetch the selected sale data
     const getSelectedSaleResponse = await axios.get(
-      `https://bisbuddy.xyz/api/erp/salesById/${newSelectedSalesId}/${userName}`
+      `http://localhost:8080/api/erp/salesById/${newSelectedSalesId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedSaleResponse.data);
@@ -508,7 +509,7 @@ function Sales() {
     };
     try {
       const addSaleResponse = await axios.post(
-        "https://bisbuddy.xyz/api/erp/sales/add",
+        "http://localhost:8080/api/erp/sales/add",
         salesData,
         config
       );
@@ -525,7 +526,7 @@ function Sales() {
       // Update inventory for all products in the sale
       for (const item of selectedProductArray) {
         const updateInventoryResponse = await axios.put(
-          `https://bisbuddy.xyz/api/erp/inventory/sale/update/${item.product}/${userName}?quantity=${item.quantity}`,
+          `http://localhost:8080/api/erp/inventory/sale/update/${item.product}/${userName}?quantity=${item.quantity}`,
           null,
           configForPut
         );
@@ -558,14 +559,14 @@ function Sales() {
     };
     try {
       const updateInventoryResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/inventory/sale/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `http://localhost:8080/api/erp/inventory/sale/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(updateInventoryResponse.data);
 
       const updateSalesReturnResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/sales/return/${selectedSalesId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `http://localhost:8080/api/erp/sales/return/${selectedSalesId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
@@ -586,7 +587,7 @@ function Sales() {
       if (productsOfReturn.outstandingAmount != null) {
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -601,7 +602,7 @@ function Sales() {
       if (productsOfReturn.outstandingAmount != null) {
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -629,7 +630,7 @@ function Sales() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.xyz/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${restOfAdvance}`,
+        `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${restOfAdvance}`,
         null,
         configForPut
       );
@@ -648,13 +649,13 @@ function Sales() {
           <div className="listing-container">
             <div
               style={{
-                border: "1px solid black",
+                border: "3px solid black",
                 padding: "10px",
                 display: "flex",
               }}
             >
               <div style={{ flexBasis: "40%", paddingRight: "10px" }}>
-                <label>
+                <label style={{fontWeight: "600"}}>
                   {t("select_product")}:{" "}
                   <div style={{ width: "250px" }}>
                     <Select
@@ -674,7 +675,7 @@ function Sales() {
                     style={{ color: "green", fontWeight: "bold" }}
                   ></label>
                 )}
-                <label>{t("quantity")}:</label>
+                <label style={{fontWeight: "600"}}>{t("quantity")}:</label>
                 <input
                   type="number"
                   value={quantity}
@@ -695,10 +696,10 @@ function Sales() {
                     <table className="table">
                       <thead>
                         <tr>
-                          <th>Name</th>
-                          <th>Price</th>
-                          <th>Quantity</th>
-                          <th>Action</th>
+                          <th style={{fontWeight: "600"}}>Name</th>
+                          <th style={{fontWeight: "600"}}>Price</th>
+                          <th style={{fontWeight: "600"}}>Quantity</th>
+                          <th style={{fontWeight: "600"}}>Action</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -729,14 +730,14 @@ function Sales() {
                     </table>
                   </div>
                 )}
-                <div>
+                <div style={{fontWeight: "600"}}>
                   {actualSaleAmount !== 0 ? "Total: " + actualSaleAmount : ""}
                 </div>
               </div>
             </div>
 
-            <div>
-              <label>
+            <div style={{ paddingTop: "10px" }}>
+              <label style={{fontWeight: "600"}}>
                 {t("select_customer")}:
                 <select
                   value={selectedCustomerId}
@@ -755,25 +756,27 @@ function Sales() {
                 </select>
               </label>
             </div>
-            <label>{t("payment_received")}:</label>
-            <input
-              type="number"
-              value={advance}
-              onChange={(e) => setAdvance(e.target.value)}
-            />
+            <div style={{ paddingTop: "10px" }}>
+              <label style={{fontWeight: "600"}}>{t("payment_received")}:</label>
+              <input
+                type="number"
+                value={advance}
+                onChange={(e) => setAdvance(e.target.value)}
+              />
+            </div>
             <br />
             <div>
-              <label>{t("print_invoice")}</label>
+              <label style={{fontWeight: "600"}}>{t("print_invoice")}</label>
               <input
-                  type="radio"
-                  id="generate-invoice"
-                  name="invoice-option"
-                  value="true"
-                  checked={selectRadio}
-                  onChange={handleGenerateInvoice}
-                  // onClick={() => setSelectRadio(!selectRadio)} // Toggle the value on click
-                  className="custom-radio"
-                />
+                type="radio"
+                id="generate-invoice"
+                name="invoice-option"
+                value="true"
+                checked={selectRadio}
+                onChange={handleGenerateInvoice}
+                // onClick={() => setSelectRadio(!selectRadio)} // Toggle the value on click
+                className="custom-radio"
+              />
               <br />
             </div>
             <button
@@ -792,13 +795,13 @@ function Sales() {
           <div className="listing-container">
             <div
               style={{
-                border: "1px solid black",
+                border: "3px solid black",
                 padding: "10px",
                 display: "flex",
               }}
             >
               <div style={{ flexBasis: "40%", paddingRight: "10px" }}>
-                <label>
+                <label style={{fontWeight: "600"}}>
                   Select a sale:
                   <div style={{ width: "150px" }}>
                     <Select
@@ -810,7 +813,7 @@ function Sales() {
                     />
                   </div>
                 </label>
-                <div>
+                <div style={{ paddingTop: "10px" }}>
                   <select onChange={handleProductChangeForReturn}>
                     <option value="">Select a product</option>
                     {productsOfReturn.saleRecords &&
@@ -829,14 +832,13 @@ function Sales() {
               <div style={{ flexBasis: "60%", paddingLeft: "10px" }}>
                 {selectedSaleItem && (
                   <div>
-                    <p>Selected Sale Item:</p>
                     <div className="table-container">
                       <table className="table">
                         <thead>
                           <tr>
-                            <th>Name</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
+                            <th style={{fontWeight: "600"}}>Name</th>
+                            <th style={{fontWeight: "600"}}>Quantity</th>
+                            <th style={{fontWeight: "600"}}>Total</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -857,7 +859,7 @@ function Sales() {
                     </div>
 
                     <div>
-                      <label>Enter quantity returned:</label>
+                      <label style={{fontWeight: "600"}}>Enter quantity returned:</label>
                       <input
                         type="number"
                         value={quantity}
@@ -882,7 +884,7 @@ function Sales() {
             </div>
             <div>
               {selectedSaleItem && isReturnButtonClicked && (
-                <p>
+                <p style={{fontWeight: "600"}}>
                   Product Return Amount:{" "}
                   {selectedSaleItem.currentTotal -
                     (selectedSaleItem.product?.selling_price || 0) *
@@ -894,7 +896,7 @@ function Sales() {
             <div>
               {productsOfReturn.outstandingAmount !== 0 &&
                 isReturnButtonClicked && (
-                  <p>
+                  <p style={{fontWeight: "600"}}>
                     Money Customer Owes: {productsOfReturn.outstandingAmount}
                   </p>
                 )}
@@ -908,7 +910,7 @@ function Sales() {
                       quantityAfterReturn &&
                 selectedSaleItem && (
                   <div>
-                    <p>
+                    <p style={{fontWeight: "600"}}>
                       You only have to give back:{" "}
                       {(selectedSaleItem?.currentTotal || 0) -
                         (selectedSaleItem?.product?.selling_price || 0) *
@@ -927,7 +929,7 @@ function Sales() {
                     (selectedSaleItem.product?.selling_price || 0) *
                       quantityAfterReturn && (
                   <div>
-                    <p>
+                    <p style={{fontWeight: "600"}}>
                       Balance money remainning:{" "}
                       {productsOfReturn.outstandingAmount -
                         (selectedSaleItem.currentTotal -
@@ -966,8 +968,14 @@ function Sales() {
       return (
         <form onSubmit={handleAdvancePayment}>
           <div className="listing-container">
-            <div>
-              <label>
+            <div
+              style={{
+                border: "3px solid black",
+                padding: "10px",
+                display: "flex",
+              }}
+            >
+              <label style={{fontWeight: "600"}}>
                 Select a sale:
                 <div style={{ width: "150px" }}>
                   <Select
@@ -980,17 +988,17 @@ function Sales() {
                 </div>
               </label>
             </div>
-            <div>
+            <div style={{ paddingTop: "10px" }}>
               {productsOfReturn && productsOfReturn.saleRecords && (
                 <div className="table-container">
                   <table className="table">
                     <thead>
                       <tr>
-                        <th>Sales Date</th>
-                        <th>Product Name</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>GST Category</th>
+                        <th style={{fontWeight: "600"}}>Sales Date</th>
+                        <th style={{fontWeight: "600"}}>Product Name</th>
+                        <th style={{fontWeight: "600"}}>Quantity</th>
+                        <th style={{fontWeight: "600"}}>Total</th>
+                        <th style={{fontWeight: "600"}}>GST Category</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1009,19 +1017,22 @@ function Sales() {
               )}
             </div>
             <div>
-              <p>Money already received:{productsOfReturn.advance}</p>
-              <p>
-                Money yet to be received:{productsOfReturn.outstandingAmount}
-              </p>
-            </div>
-            <div>
-              <label>Enter Received money:</label>
-              <input
-                type="number"
-                value={restOfAdvance}
-                onChange={(e) => setRestOfAdvance(e.target.value)}
-              />
-              <br />
+              {productsOfReturn && selectedSalesId && (
+                <div>
+                  <p style={{fontWeight: "600"}}>Money already received:{productsOfReturn.advance}</p>
+                  <p style={{fontWeight: "600"}}>
+                    Money yet to be received:
+                    {productsOfReturn.outstandingAmount}
+                  </p>
+                  <label style={{fontWeight: "600"}}>Enter Received money:</label>
+                  <input
+                    type="number"
+                    value={restOfAdvance}
+                    onChange={(e) => setRestOfAdvance(e.target.value)}
+                  />
+                  <br />
+                </div>
+              )}
             </div>
             <button className="button">OK</button>
           </div>

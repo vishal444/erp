@@ -55,7 +55,7 @@ function Purchase() {
       };
       try {
         const productsResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `http://localhost:8080/api/erp/product/getAll/${userName}`,
           config
         );
         setProducts(productsResponse.data);
@@ -66,7 +66,7 @@ function Purchase() {
         }));
         setTransformedProducts(temp);
         const purchaseResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/purchases/${userName}`,
+          `http://localhost:8080/api/erp/purchases/${userName}`,
           config
         );
         setPurchase(purchaseResponse.data);
@@ -77,7 +77,7 @@ function Purchase() {
         }));
         setTransformedPurchases(purchaseTemp);
         const purchaseOutstandingResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/purchaseOutstanding/${userName}`,
+          `http://localhost:8080/api/erp/purchaseOutstanding/${userName}`,
           config
         );
         setPurchaseOutstanding(purchaseOutstandingResponse.data);
@@ -116,7 +116,7 @@ function Purchase() {
     setSelectedPurchaseId(newSelectedPurchaseId);
     // Make GET request to fetch the selected sale data
     const getSelectedPurchaseResponse = await axios.get(
-      `https://bisbuddy.xyz/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
+      `http://localhost:8080/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedPurchaseResponse.data);
@@ -266,7 +266,7 @@ function Purchase() {
 
     try {
       const purchaseAdd = await axios.post(
-        "https://bisbuddy.xyz/api/erp/purchases/add",
+        "http://localhost:8080/api/erp/purchases/add",
         data,
         config
       );
@@ -280,7 +280,7 @@ function Purchase() {
       // Update inventory for all products in the purchase
       for (const item of selectedProductArray) {
         const inventoryPurchaseUdpate = await axios.put(
-          `https://bisbuddy.xyz/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
+          `http://localhost:8080/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
           null,
           configForPut
         );
@@ -314,14 +314,14 @@ function Purchase() {
     };
     try {
       const inventoryUpdateResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `http://localhost:8080/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(inventoryUpdateResponse.data);
 
       const purchaseUpdateResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `http://localhost:8080/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
@@ -342,7 +342,7 @@ function Purchase() {
       if (productsOfReturn.outstandingAmount != null) {
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -356,7 +356,7 @@ function Purchase() {
         const deductOutstandingAmount = amount;
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -386,7 +386,7 @@ function Purchase() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
+        `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
         null,
         configForPut
       );
@@ -404,13 +404,13 @@ function Purchase() {
           <div className="listing-container">
             <div
               style={{
-                border: "1px solid black",
+                border: "3px solid black",
                 padding: "10px",
                 display: "flex",
               }}
             >
               <div style={{ flexBasis: "40%", paddingRight: "10px" }}>
-                <label>
+                <label style={{fontWeight: "600"}}>
                   Select Product:
                   <div style={{ width: "250px" }}>
                     <Select
@@ -424,21 +424,22 @@ function Purchase() {
                   </div>
                 </label>
                 <br />
-                <label>Enter quantity:</label>
-                <input
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                />
-                <br />
-                <label>Enter price of one item:</label>
-                <input
-                  type="number"
-                  value={selectedPrice}
-                  onChange={(e) => setSelectedPrice(e.target.value)}
-                />
-
-                <br />
+                <div>
+                  <label style={{fontWeight: "600"}}>Enter quantity:</label>
+                  <input
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label style={{fontWeight: "600"}}>Enter price of one item:</label>
+                  <input
+                    type="number"
+                    value={selectedPrice}
+                    onChange={(e) => setSelectedPrice(e.target.value)}
+                  />
+                </div>
                 <button onClick={AddToProductArray} className="button">
                   Add product
                 </button>
@@ -449,10 +450,10 @@ function Purchase() {
                     <table className="table">
                       <thead>
                         <tr>
-                          <th>Name</th>
-                          <th>Price</th>
-                          <th>Quantity</th>
-                          <th>Action</th>
+                          <th style={{fontWeight: "600"}}>Name</th>
+                          <th style={{fontWeight: "600"}}>Price</th>
+                          <th style={{fontWeight: "600"}}>Quantity</th>
+                          <th style={{fontWeight: "600"}}>Action</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -483,7 +484,7 @@ function Purchase() {
                     </table>
                   </div>
                 )}
-                <div>
+                <div style={{fontWeight: "600"}}>
                   {actualPurchaseAmount !== 0
                     ? "Total: " + actualPurchaseAmount
                     : ""}
@@ -491,16 +492,16 @@ function Purchase() {
               </div>
             </div>
 
-            <div>
-              <label>Enter direct expense:</label>
+            <div style={{ paddingTop: "10px" }}>
+              <label style={{fontWeight: "600"}}>Enter direct expense: </label>
               <input
                 type="number"
                 value={directExpense}
                 onChange={(e) => setDirectExpense(e.target.value)}
               />
             </div>
-            <div>
-              <label>Enter amount paid:</label>
+            <div style={{ paddingTop: "10px" }}>
+              <label style={{fontWeight: "600"}}>Enter amount paid: </label>
               <input
                 type="number"
                 value={partPayment}
@@ -519,13 +520,13 @@ function Purchase() {
           <div className="listing-container">
             <div
               style={{
-                border: "1px solid black",
+                border: "3px solid black",
                 padding: "10px",
                 display: "flex",
               }}
             >
               <div style={{ flexBasis: "40%", paddingRight: "10px" }}>
-                <label>
+                <label style={{fontWeight: "600"}}>
                   Select A Purchase:
                   <div style={{ width: "250px" }}>
                     <Select
@@ -537,7 +538,7 @@ function Purchase() {
                     />
                   </div>
                 </label>
-                <div>
+                <div style={{paddingTop:"10px"}}>
                   <select onChange={handleProductChangeForReturn}>
                     <option value="">Select a product</option>
                     {productsOfReturn.purchaseRecords &&
@@ -556,10 +557,10 @@ function Purchase() {
                       <table className="table">
                         <thead>
                           <tr>
-                            <th>Name</th>
-                            <th>Quantity</th>
-                            <th>PricePerItem</th>
-                            <th>Total</th>
+                            <th style={{fontWeight: "600"}}>Name</th>
+                            <th style={{fontWeight: "600"}}>Quantity</th>
+                            <th style={{fontWeight: "600"}}>PricePerItem</th>
+                            <th style={{fontWeight: "600"}}>Total</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -582,7 +583,7 @@ function Purchase() {
                       </table>
                     </div>
                     <div style={{ paddingTop: "8px" }}>
-                      <label>Enter quantity returned:</label>
+                      <label style={{fontWeight: "600"}}>Enter quantity returned:</label>
                       <input
                         type="number"
                         value={quantity}
@@ -608,12 +609,12 @@ function Purchase() {
             <div>
               {productsOfReturn.outstandingAmount !== 0 &&
                 isReturnButtonClicked && (
-                  <p>Money I Owe: {productsOfReturn.outstandingAmount}</p>
+                  <p style={{fontWeight: "600"}}>Money I Owe: {productsOfReturn.outstandingAmount}</p>
                 )}
             </div>
             <div>
               {selectedPurchaseItem && isReturnButtonClicked && (
-                <p>
+                <p style={{fontWeight: "600"}}>
                   Money to be got back: {selectedPurchaseItem.price * quantity}
                 </p>
               )}
@@ -626,7 +627,7 @@ function Purchase() {
                     (selectedPurchaseItem?.price || 0) * quantityAfterReturn &&
                 selectedPurchaseItem && (
                   <div>
-                    <p>
+                    <p style={{fontWeight: "600"}}>
                       You should get:{" "}
                       {(selectedPurchaseItem?.currentTotal || 0) -
                         (selectedPurchaseItem?.price || 0) *
@@ -645,7 +646,7 @@ function Purchase() {
                     (selectedPurchaseItem?.price || 0) *
                       quantityAfterReturn && (
                   <div>
-                    <p>
+                    <p style={{fontWeight: "600"}}>
                       You have to pay:{" "}
                       {productsOfReturn.outstandingAmount -
                         (selectedPurchaseItem.currentTotal -
@@ -677,8 +678,12 @@ function Purchase() {
       return (
         <form onSubmit={handlePartPayment}>
           <div className="listing-container">
-            <div>
-              <label>
+            <div  style={{
+                border: "3px solid black",
+                padding: "10px",
+                display: "flex",
+              }}>
+              <label style={{fontWeight: "600"}}>
                 Select a sale:
                 <div style={{ width: "150px" }}>
                   <Select
@@ -691,17 +696,17 @@ function Purchase() {
                 </div>
               </label>
             </div>
-            <div>
+            <div style={{paddingTop:"10px"}}>
               {productsOfReturn && productsOfReturn.purchaseRecords && (
                 <div className="table-container">
                   <table className="table">
                     <thead>
                       <tr>
-                        <th>Sales Date</th>
-                        <th>Product Name</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>GST Category</th>
+                        <th style={{fontWeight: "600"}}>Sales Date</th>
+                        <th style={{fontWeight: "600"}}>Product Name</th>
+                        <th style={{fontWeight: "600"}}>Quantity</th>
+                        <th style={{fontWeight: "600"}}>Total</th>
+                        <th style={{fontWeight: "600"}}>GST Category</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -720,17 +725,22 @@ function Purchase() {
               )}
             </div>
             <div>
-              <p>Already paid:{productsOfReturn.partPayment}</p>
-              <p>Money yet to be paid:{productsOfReturn.outstandingAmount}</p>
-            </div>
-            <div>
-              <label>Enter Payment money:</label>
-              <input
-                type="number"
-                value={restOfPayment}
-                onChange={(e) => setRestOfPayment(e.target.value)}
-              />
-              <br />
+              { productsOfReturn && selectedPurchaseId && (
+                <div>
+                  <p style={{fontWeight: "600"}}>Already paid:{productsOfReturn.partPayment}</p>
+                  <p style={{fontWeight: "600"}}>
+                    Money yet to be paid:{productsOfReturn.outstandingAmount}
+                  </p>
+                  <div>
+                    <label style={{fontWeight: "600"}}>Enter Payment money:</label>
+                    <input
+                      type="number"
+                      value={restOfPayment}
+                      onChange={(e) => setRestOfPayment(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
             <button className="button">OK</button>
           </div>
