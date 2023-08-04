@@ -21,7 +21,7 @@ function LoginAndRegister() {
       try {
         // Send login request to the API using Axios
         axios
-          .post("https://bisbuddy.xyz/api/erp/auth/authenticate", {
+          .post("http://localhost:8080/api/erp/auth/authenticate", {
             email,
             password,
           })
@@ -46,7 +46,7 @@ function LoginAndRegister() {
       try {
         // Send registration request to the API using Axios
         axios
-          .post("https://bisbuddy.xyz/api/erp/auth/register", {
+          .post("http://localhost:8080/api/erp/auth/register", {
             email,
             password,
           })
@@ -79,7 +79,7 @@ function LoginAndRegister() {
     <div style={{paddingTop:"20px"}}>
       <div className="listing-container-ash-notwide">
         <form onSubmit={handleSubmit} style={{ paddingTop: "50px" }}>
-          <div className="listing-container">
+          <div className="listing-container-login">
             <h1>{isLogin ? "Login" : "Register"}</h1>
             <label>
               Email:
