@@ -15,14 +15,6 @@ export default function Tabs() {
   const [productData, setProductsData] = useState([]);
   const [showAddProductsPopup, setShowAddProductsPopup] = useState(false);
 
-  // Use this useEffect hook to change the language when the "Select Language" dropdown is changed
-  useEffect(() => {
-    const lang = localStorage.getItem("lang");
-    if (lang) {
-      i18next.changeLanguage(lang);
-    }
-  }, []);
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userName = localStorage.getItem("email");
@@ -43,7 +35,7 @@ export default function Tabs() {
     async function fetchData() {
       try {
         const productsResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `http://localhost:8080/api/erp/product/getAll/${userName}`,
           config
         );
         setProductsData(productsResponse.data);
@@ -60,6 +52,7 @@ export default function Tabs() {
     }
     fetchData();
   }, []);
+
 
   const handleLanguage = (e) => {
     const lang = e.target.value;
@@ -156,7 +149,7 @@ export default function Tabs() {
           Log out
         </button>
       </div>
-      {showAddProductsPopup && productData.length === 0 && (
+      {showAddProductsPopup && productData.length === 0 &&(
         <div
           style={{
             position: "fixed",
@@ -181,10 +174,7 @@ export default function Tabs() {
             >
               Close
             </button>
-            <button
-              onClick={() => (window.location.href = "/massInput")}
-              className="button"
-            >
+            <button onClick={() => (window.location.href = "/massInput")} className="button">
               Add Products
             </button>{" "}
             {/* Replace '/add-products' with the actual route where users can add products */}

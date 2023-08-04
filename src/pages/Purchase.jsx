@@ -30,6 +30,9 @@ function Purchase() {
   const [transformedPurchaseOutstanding, setTransformedPurchaseOutstanding] =
     useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [isReturnButtonClicked, setIsReturnButtonClicked] = useState(false);
+  const [isButtonClicked, setIsButtonClicked] = useState(false); // for button fading purpose
+  // const [returnAmount, setReturnAmount] = useState("");
 
   const { t } = useTranslation();
 
@@ -52,7 +55,7 @@ function Purchase() {
       };
       try {
         const productsResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `http://localhost:8080/api/erp/product/getAll/${userName}`,
           config
         );
         setProducts(productsResponse.data);
@@ -63,7 +66,7 @@ function Purchase() {
         }));
         setTransformedProducts(temp);
         const purchaseResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/purchases/${userName}`,
+          `http://localhost:8080/api/erp/purchases/${userName}`,
           config
         );
         setPurchase(purchaseResponse.data);
@@ -74,7 +77,7 @@ function Purchase() {
         }));
         setTransformedPurchases(purchaseTemp);
         const purchaseOutstandingResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/purchaseOutstanding/${userName}`,
+          `http://localhost:8080/api/erp/purchaseOutstanding/${userName}`,
           config
         );
         setPurchaseOutstanding(purchaseOutstandingResponse.data);
@@ -99,14 +102,6 @@ function Purchase() {
     setQuantityAfterReturn("");
   }, [selectedOptionForm]);
 
-  // const handleOptionChange = (event) => {
-  //   setSelectedOptionForm(event.target.value);
-  // };
-  const handleOptionChange = (option) => {
-    setSelectedOptionForm(option);
-  };
-  
-  
   // const handleProductIdChange = (e) => {
   //   setSelectedProductId(e.target.value);
   // };
@@ -121,12 +116,20 @@ function Purchase() {
     setSelectedPurchaseId(newSelectedPurchaseId);
     // Make GET request to fetch the selected sale data
     const getSelectedPurchaseResponse = await axios.get(
-      `https://bisbuddy.xyz/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
+      `http://localhost:8080/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedPurchaseResponse.data);
     console.log("selected purchaseId:", newSelectedPurchaseId);
   };
+
+  // const handleOptionChange = (event) => {
+  //   setSelectedOptionForm(event.target.value);
+  // };
+  const handleOptionChange = (option) => {
+    setSelectedOptionForm(option);
+  };
+
   const AddToProductArray = (event) => {
     event.preventDefault();
     // Check if a product has been selected
@@ -202,12 +205,13 @@ function Purchase() {
     // Check if productsOfReturn has been set yet
     if (productsOfReturn && productsOfReturn.purchaseRecords) {
       // Find the sale item corresponding to the selected product id
-      const saleItem = productsOfReturn.purchaseRecords.find(
+      const purchaseItem = productsOfReturn.purchaseRecords.find(
         (item) => item.product.product_id === newSelectedProductId
       );
-      setSelectedPurchaseItem(saleItem);
+      setSelectedPurchaseItem(purchaseItem);
     }
   };
+  console.log("purchase item:", selectedPurchaseItem);
   const handleDecreaseQuantity = (e) => {
     e.preventDefault();
     setSelectedPurchaseItem((prevState) => ({
@@ -215,6 +219,8 @@ function Purchase() {
       current_quantity: prevState.current_quantity - quantity,
     }));
     setQuantityAfterReturn(selectedPurchaseItem.current_quantity - quantity);
+    setIsReturnButtonClicked(true);
+    setIsButtonClicked(true);
   };
   const handleSubmitPurchase = async (event) => {
     event.preventDefault();
@@ -260,7 +266,7 @@ function Purchase() {
 
     try {
       const purchaseAdd = await axios.post(
-        "https://bisbuddy.xyz/api/erp/purchases/add",
+        "http://localhost:8080/api/erp/purchases/add",
         data,
         config
       );
@@ -274,7 +280,7 @@ function Purchase() {
       // Update inventory for all products in the purchase
       for (const item of selectedProductArray) {
         const inventoryPurchaseUdpate = await axios.put(
-          `https://bisbuddy.xyz/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
+          `http://localhost:8080/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
           null,
           configForPut
         );
@@ -297,7 +303,8 @@ function Purchase() {
     event.preventDefault();
     const userName = localStorage.getItem("email");
     const calc1 = selectedPurchaseItem.price * quantityAfterReturn;
-    const amount = selectedPurchaseItem.total - calc1;
+    const amount = selectedPurchaseItem.currentTotal - calc1;
+    console.log("return amount: ", amount);
     // Get the token from localStorage
     const token = localStorage.getItem("token");
     const config = {
@@ -307,20 +314,57 @@ function Purchase() {
     };
     try {
       const inventoryUpdateResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `http://localhost:8080/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(inventoryUpdateResponse.data);
 
       const purchaseUpdateResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `http://localhost:8080/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
       console.log(purchaseUpdateResponse.data);
     } catch (error) {
       console.log(error);
+    }
+
+    if (productsOfReturn.outstandingAmount < amount) {
+      const returnAmount =
+        (selectedPurchaseItem?.currentTotal || 0) -
+        (selectedPurchaseItem?.price || 0) * quantityAfterReturn -
+        productsOfReturn.outstandingAmount;
+      console.log("return aount:", returnAmount);
+      const deductOutstandingAmount = amount - returnAmount;
+
+      // To deduct the outstanding amount
+      if (productsOfReturn.outstandingAmount != null) {
+        try {
+          const response = await axios.put(
+            `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            null,
+            config
+          );
+          console.log(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    } else {
+      if (productsOfReturn.outstandingAmount != null) {
+        const deductOutstandingAmount = amount;
+        try {
+          const response = await axios.put(
+            `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            null,
+            config
+          );
+          console.log(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
     }
     setSelectedProductArray([]);
     setArrayForPrint([]);
@@ -342,7 +386,7 @@ function Purchase() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
+        `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
         null,
         configForPut
       );
@@ -401,39 +445,43 @@ function Purchase() {
               </div>
               <div style={{ flexBasis: "60%", paddingLeft: "10px" }}>
                 {selectedProductArray.length > 0 && (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {arrayForPrint.map((product, index) => (
-                        <tr key={index}>
-                          <td style={{ textAlign: "center" }}>
-                            {product.productName}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {product.buyingPrice}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {product.productQuantity}
-                          </td>
-                          <td>
-                            <button
-                              onClick={(event) => handleDeleteRow(event, index)}
-                              className="button"
-                            >
-                              Delete
-                            </button>
-                          </td>
+                  <div className="table-container">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Price</th>
+                          <th>Quantity</th>
+                          <th>Action</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {arrayForPrint.map((product, index) => (
+                          <tr key={index}>
+                            <td style={{ textAlign: "center" }}>
+                              {product.productName}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {product.buyingPrice}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {product.productQuantity}
+                            </td>
+                            <td>
+                              <button
+                                onClick={(event) =>
+                                  handleDeleteRow(event, index)
+                                }
+                                className="button"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
                 <div>
                   {actualPurchaseAmount !== 0
@@ -504,36 +552,36 @@ function Purchase() {
               <div style={{ flexBasis: "60%", paddingLeft: "10px" }}>
                 {selectedPurchaseItem && (
                   <div>
-                    <p>Selected Purchase Item:</p>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Quantity</th>
-                          <th>PricePerItem</th>
-                          <th>Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td style={{ textAlign: "center" }}>
-                            {selectedPurchaseItem.product.name}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {selectedPurchaseItem.current_quantity}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {selectedPurchaseItem.price}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {selectedPurchaseItem.price *
-                              selectedPurchaseItem.current_quantity}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    <div>
+                    <div className="table-container">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>PricePerItem</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td style={{ textAlign: "center" }}>
+                              {selectedPurchaseItem.product.name}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {selectedPurchaseItem.current_quantity}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {selectedPurchaseItem.price}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {selectedPurchaseItem.price *
+                                selectedPurchaseItem.current_quantity}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div style={{ paddingTop: "8px" }}>
                       <label>Enter quantity returned:</label>
                       <input
                         type="number"
@@ -542,8 +590,12 @@ function Purchase() {
                       />
                       <br />
                       <button
+                        id="productReturnButton"
                         onClick={handleDecreaseQuantity}
-                        className="button"
+                        className={`button ${
+                          isButtonClicked ? "fade-color" : ""
+                        }`}
+                        disabled={isReturnButtonClicked}
                       >
                         {" "}
                         Confirm{" "}
@@ -553,12 +605,67 @@ function Purchase() {
                 )}
               </div>
             </div>
+            <div>
+              {productsOfReturn.outstandingAmount !== 0 &&
+                isReturnButtonClicked && (
+                  <p>Money I Owe: {productsOfReturn.outstandingAmount}</p>
+                )}
+            </div>
+            <div>
+              {selectedPurchaseItem && isReturnButtonClicked && (
+                <p>
+                  Money to be got back: {selectedPurchaseItem.price * quantity}
+                </p>
+              )}
+            </div>
+            <div>
+              {productsOfReturn.outstandingAmount !== 0 &&
+                isReturnButtonClicked &&
+                productsOfReturn.outstandingAmount <
+                  (selectedPurchaseItem?.currentTotal || 0) -
+                    (selectedPurchaseItem?.price || 0) * quantityAfterReturn &&
+                selectedPurchaseItem && (
+                  <div>
+                    <p>
+                      You should get:{" "}
+                      {(selectedPurchaseItem?.currentTotal || 0) -
+                        (selectedPurchaseItem?.price || 0) *
+                          quantityAfterReturn -
+                        productsOfReturn.outstandingAmount}
+                    </p>
+                  </div>
+                )}
+            </div>
+            <div>
+              {productsOfReturn.outstandingAmount !== 0 &&
+                isReturnButtonClicked &&
+                selectedPurchaseItem &&
+                productsOfReturn.outstandingAmount >
+                  (selectedPurchaseItem.currentTotal || 0) -
+                    (selectedPurchaseItem?.price || 0) *
+                      quantityAfterReturn && (
+                  <div>
+                    <p>
+                      You have to pay:{" "}
+                      {productsOfReturn.outstandingAmount -
+                        (selectedPurchaseItem.currentTotal -
+                          selectedPurchaseItem.price * quantityAfterReturn)}
+                    </p>
+                  </div>
+                )}
+            </div>
             {/* <div>
-              <p>
-                Money to be got back // correct this:
-                {selectedPurchaseItem &&
-                  selectedPurchaseItem.price * quantityAfterReturn}
-              </p>
+              {productsOfReturn.outstandingAmount !== 0 &&
+                isReturnButtonClicked && (
+                  <p>
+                    Enter received money:{" "}
+                    <input
+                      type="number"
+                      value={returnAmount}
+                      onChange={(e) => setReturnAmount(e.target.value)}
+                    />
+                  </p>
+                )}
             </div> */}
             <button type="submit" className="button">
               Ok
@@ -586,28 +693,30 @@ function Purchase() {
             </div>
             <div>
               {productsOfReturn && productsOfReturn.purchaseRecords && (
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Sales Date</th>
-                      <th>Product Name</th>
-                      <th>Quantity</th>
-                      <th>Total</th>
-                      <th>GST Category</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {productsOfReturn.purchaseRecords.map((record) => (
-                      <tr key={record.id}>
-                        <td>{productsOfReturn.sales_date}</td>
-                        <td>{record.product.name}</td>
-                        <td>{record.current_quantity}</td>
-                        <td>{record.total}</td>
-                        <td>{record.product.gstCategory}</td>
+                <div className="table-container">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Sales Date</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>GST Category</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {productsOfReturn.purchaseRecords.map((record) => (
+                        <tr key={record.id}>
+                          <td>{productsOfReturn.sales_date}</td>
+                          <td>{record.product.name}</td>
+                          <td>{record.initial_quantity}</td>
+                          <td>{record.initialTotal}</td>
+                          <td>{record.product.gstCategory}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
             <div>
@@ -642,7 +751,8 @@ function Purchase() {
               }`}
               style={{
                 backgroundColor:
-                  selectedOptionForm === "purchase" ? "black" : "", fontWeight: "900",
+                  selectedOptionForm === "purchase" ? "black" : "",
+                fontWeight: "900",
               }}
               onClick={() => handleOptionChange("purchase")}
             >
@@ -654,8 +764,8 @@ function Purchase() {
                 selectedOptionForm === "purchase" && "active"
               }`}
               style={{
-                backgroundColor:
-                  selectedOptionForm === "return" ? "black" : "", fontWeight: "900",
+                backgroundColor: selectedOptionForm === "return" ? "black" : "",
+                fontWeight: "900",
               }}
               onClick={() => handleOptionChange("return")}
             >
@@ -667,8 +777,8 @@ function Purchase() {
                 selectedOptionForm === "onHold" && "active"
               }`}
               style={{
-                backgroundColor:
-                  selectedOptionForm === "onHold" ? "black" : "", fontWeight: "900",
+                backgroundColor: selectedOptionForm === "onHold" ? "black" : "",
+                fontWeight: "900",
               }}
               onClick={() => handleOptionChange("onHold")}
             >

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import i18next from "i18next";
 import axios from "axios";
 import Select from "react-select";
+import { RadioGroup, RadioButton } from "react-radio-buttons";
 
 function Sales() {
   const [selectedOptionForm, setSelectedOptionForm] = useState("sales");
@@ -37,6 +38,10 @@ function Sales() {
     useState(false);
   const [companyData, setCompanyData] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [selectRadio, setSelectRadio] = useState(false);
+  const [isReturnButtonClicked, setIsReturnButtonClicked] = useState(false);
+  const [isButtonClicked, setIsButtonClicked] = useState(false); // for button fading purpose
+  // const [returnAmount, setReturnAmount] = useState("");
 
   const { t } = useTranslation();
 
@@ -59,7 +64,7 @@ function Sales() {
     async function fetchData() {
       try {
         const productsResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `http://localhost:8080/api/erp/product/getAll/${userName}`,
           config
         );
 
@@ -74,12 +79,12 @@ function Sales() {
         }
 
         const inventoryResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/inventory/getAll/${userName}`,
+          `http://localhost:8080/api/erp/inventory/getAll/${userName}`,
           config
         );
         setInventory(inventoryResponse.data);
         const salesResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/sales/${userName}`,
+          `http://localhost:8080/api/erp/sales/${userName}`,
           config
         );
         setSales(salesResponse.data);
@@ -93,7 +98,7 @@ function Sales() {
         }
 
         const salesOutstandingResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/salesOutstanding/${userName}`,
+          `http://localhost:8080/api/erp/salesOutstanding/${userName}`,
           config
         );
         setSalesOutstanding(salesOutstandingResponse.data);
@@ -108,12 +113,12 @@ function Sales() {
           setTransformedSalesOutstanding(salesOutstandingTemp);
         }
         const customersResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/customer/getAll/${userName}`,
+          `http://localhost:8080/api/erp/customer/getAll/${userName}`,
           config
         );
         setCustomers(customersResponse.data);
         const companyResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/company/${userName}`,
+          `http://localhost:8080/api/erp/company/${userName}`,
           config
         );
         setCompanyData(companyResponse.data);
@@ -166,9 +171,10 @@ function Sales() {
   };
   const handleGenerateInvoice = (event) => {
     event.preventDefault();
+    setSelectRadio(!selectRadio);
     setInvoiceTrigger(true);
   };
-  
+
   // console.log("inventory:", sales);
   // const handleProductIdChange = (e) => {
   //   setSelectedProductId(e.target.value);
@@ -249,14 +255,13 @@ function Sales() {
     setSelectedSalesId(newSelectedSalesId);
     // Make GET request to fetch the selected sale data
     const getSelectedSaleResponse = await axios.get(
-      `https://bisbuddy.xyz/api/erp/salesById/${newSelectedSalesId}/${userName}`
+      `http://localhost:8080/api/erp/salesById/${newSelectedSalesId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedSaleResponse.data);
     console.log("selected saleId:", newSelectedSalesId);
   };
   ///////////////////////////////////////
-
   const handleProductChangeForReturn = (e) => {
     e.preventDefault();
     const newSelectedProductId = parseInt(e.target.value);
@@ -278,6 +283,8 @@ function Sales() {
       current_quantity: prevState.current_quantity - quantity,
     }));
     setQuantityAfterReturn(selectedSaleItem.current_quantity - quantity);
+    setIsReturnButtonClicked(true);
+    setIsButtonClicked(true);
   };
   const handleCustomerChange = (e) => {
     e.preventDefault();
@@ -477,7 +484,6 @@ function Sales() {
     }
 
     const salesData = {
-      date: "",
       unit: "Kg",
       actualSaleAmount: actualSaleAmount,
       grandTotal: "",
@@ -503,7 +509,7 @@ function Sales() {
     };
     try {
       const addSaleResponse = await axios.post(
-        "https://bisbuddy.xyz/api/erp/sales/add",
+        "http://localhost:8080/api/erp/sales/add",
         salesData,
         config
       );
@@ -520,7 +526,7 @@ function Sales() {
       // Update inventory for all products in the sale
       for (const item of selectedProductArray) {
         const updateInventoryResponse = await axios.put(
-          `https://bisbuddy.xyz/api/erp/inventory/sale/update/${item.product}/${userName}?quantity=${item.quantity}`,
+          `http://localhost:8080/api/erp/inventory/sale/update/${item.product}/${userName}?quantity=${item.quantity}`,
           null,
           configForPut
         );
@@ -542,7 +548,7 @@ function Sales() {
     event.preventDefault();
     const userName = localStorage.getItem("email");
     const calc1 = selectedSaleItem.product.selling_price * quantityAfterReturn;
-    const amount = selectedSaleItem.total - calc1;
+    const amount = selectedSaleItem.currentTotal - calc1;
     // Get the token from localStorage
     const token = localStorage.getItem("token");
     // Set up the Axios config object with the Authorization header and data object
@@ -553,14 +559,14 @@ function Sales() {
     };
     try {
       const updateInventoryResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/inventory/sale/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `http://localhost:8080/api/erp/inventory/sale/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(updateInventoryResponse.data);
 
       const updateSalesReturnResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/sales/return/${selectedSalesId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `http://localhost:8080/api/erp/sales/return/${selectedSalesId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
@@ -568,8 +574,48 @@ function Sales() {
     } catch (error) {
       console.log(error);
     }
+
+    if (productsOfReturn.outstandingAmount < amount) {
+      // only need to give back money if the return amount is greater than outstanding
+      const returnAmount =
+        (selectedSaleItem?.currentTotal || 0) -
+        (selectedSaleItem?.product?.selling_price || 0) * quantityAfterReturn -
+        productsOfReturn.outstandingAmount;
+      console.log("return aount:", returnAmount);
+      const deductOutstandingAmount = amount - returnAmount;
+      // To deduct the outstanding amount
+      if (productsOfReturn.outstandingAmount != null) {
+        try {
+          const response = await axios.put(
+            `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            null,
+            config
+          );
+          console.log(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    } else {
+      const deductOutstandingAmount = amount;
+      // To deduct the outstanding amount
+      if (productsOfReturn.outstandingAmount != null) {
+        try {
+          const response = await axios.put(
+            `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            null,
+            config
+          );
+          console.log(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+
     setSelectedProductArray([]);
     setArrayForPrint([]);
+    setSelectedSaleItem("");
     setQuantity("");
   };
   const handleAdvancePayment = async (event) => {
@@ -584,7 +630,7 @@ function Sales() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.xyz/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${restOfAdvance}`,
+        `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${restOfAdvance}`,
         null,
         configForPut
       );
@@ -592,6 +638,9 @@ function Sales() {
     } catch (error) {
       console.log(error);
     }
+    setSelectedSalesId("");
+    setProductsOfReturn([]);
+    setRestOfAdvance("");
   };
   const renderForm = () => {
     if (selectedOptionForm === "sales") {
@@ -643,39 +692,43 @@ function Sales() {
               </div>
               <div style={{ flexBasis: "60%", paddingLeft: "10px" }}>
                 {selectedProductArray.length > 0 && (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {arrayForPrint.map((product, index) => (
-                        <tr key={index}>
-                          <td style={{ textAlign: "center" }}>
-                            {product.productName}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {product.productPrice}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {product.productQuantity}
-                          </td>
-                          <td>
-                            <button
-                              onClick={(event) => handleDeleteRow(event, index)}
-                              className="button"
-                            >
-                              Delete
-                            </button>
-                          </td>
+                  <div className="table-container">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Price</th>
+                          <th>Quantity</th>
+                          <th>Action</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {arrayForPrint.map((product, index) => (
+                          <tr key={index}>
+                            <td style={{ textAlign: "center" }}>
+                              {product.productName}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {product.productPrice}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {product.productQuantity}
+                            </td>
+                            <td>
+                              <button
+                                onClick={(event) =>
+                                  handleDeleteRow(event, index)
+                                }
+                                className="button"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
                 <div>
                   {actualSaleAmount !== 0 ? "Total: " + actualSaleAmount : ""}
@@ -713,12 +766,15 @@ function Sales() {
             <div>
               <label>{t("print_invoice")}</label>
               <input
-                type="radio"
-                id="generate-invoice"
-                name="invoice-option"
-                value="true"
-                onClick={handleGenerateInvoice}
-              />
+                  type="radio"
+                  id="generate-invoice"
+                  name="invoice-option"
+                  value="true"
+                  checked={selectRadio}
+                  onChange={handleGenerateInvoice}
+                  // onClick={() => setSelectRadio(!selectRadio)} // Toggle the value on click
+                  className="custom-radio"
+                />
               <br />
             </div>
             <button
@@ -775,29 +831,31 @@ function Sales() {
                 {selectedSaleItem && (
                   <div>
                     <p>Selected Sale Item:</p>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Quantity</th>
-                          <th>Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td style={{ textAlign: "center" }}>
-                            {selectedSaleItem.product.name}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {selectedSaleItem.current_quantity}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {selectedSaleItem.product.selling_price *
-                              selectedSaleItem.current_quantity}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div className="table-container">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td style={{ textAlign: "center" }}>
+                              {selectedSaleItem.product.name}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {selectedSaleItem.current_quantity}
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {selectedSaleItem.product.selling_price *
+                                selectedSaleItem.current_quantity}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
 
                     <div>
                       <label>Enter quantity returned:</label>
@@ -808,8 +866,12 @@ function Sales() {
                       />
                       <br />
                       <button
+                        id="productReturnButton"
                         onClick={handleDecreaseQuantity}
-                        className="button"
+                        className={`button ${
+                          isButtonClicked ? "fade-color" : ""
+                        }`}
+                        disabled={isReturnButtonClicked}
                       >
                         {" "}
                         Confirm{" "}
@@ -820,14 +882,81 @@ function Sales() {
               </div>
             </div>
             <div>
-              <p>
-                Money to be returned:
-                {selectedSaleItem &&
-                  selectedSaleItem.total -
-                    selectedSaleItem.product.selling_price *
+              {selectedSaleItem && isReturnButtonClicked && (
+                <p>
+                  Product Return Amount:{" "}
+                  {selectedSaleItem.currentTotal -
+                    (selectedSaleItem.product?.selling_price || 0) *
                       quantityAfterReturn}
-              </p>
+                  {/* The ?. operator ensures that selectedSaleItem.product is safely accessed */}
+                </p>
+              )}
             </div>
+            <div>
+              {productsOfReturn.outstandingAmount !== 0 &&
+                isReturnButtonClicked && (
+                  <p>
+                    Money Customer Owes: {productsOfReturn.outstandingAmount}
+                  </p>
+                )}
+            </div>
+            <div>
+              {productsOfReturn.outstandingAmount !== 0 &&
+                isReturnButtonClicked &&
+                productsOfReturn.outstandingAmount <
+                  (selectedSaleItem?.currentTotal || 0) -
+                    (selectedSaleItem?.product?.selling_price || 0) *
+                      quantityAfterReturn &&
+                selectedSaleItem && (
+                  <div>
+                    <p>
+                      You only have to give back:{" "}
+                      {(selectedSaleItem?.currentTotal || 0) -
+                        (selectedSaleItem?.product?.selling_price || 0) *
+                          quantityAfterReturn -
+                        productsOfReturn.outstandingAmount}
+                    </p>
+                  </div>
+                )}
+            </div>
+            <div>
+              {productsOfReturn.outstandingAmount !== 0 &&
+                isReturnButtonClicked &&
+                selectedSaleItem &&
+                productsOfReturn.outstandingAmount >
+                  (selectedSaleItem.currentTotal || 0) -
+                    (selectedSaleItem.product?.selling_price || 0) *
+                      quantityAfterReturn && (
+                  <div>
+                    <p>
+                      Balance money remainning:{" "}
+                      {productsOfReturn.outstandingAmount -
+                        (selectedSaleItem.currentTotal -
+                          selectedSaleItem.product.selling_price *
+                            quantityAfterReturn)}
+                    </p>
+                  </div>
+                )}
+            </div>
+            {/* <div>
+              {selectedSaleItem &&
+                productsOfReturn.outstandingAmount !== 0 &&
+                productsOfReturn.outstandingAmount <
+                  (selectedSaleItem?.currentTotal || 0) -
+                    (selectedSaleItem?.product?.selling_price || 0) *
+                      quantityAfterReturn &&
+                isReturnButtonClicked && (
+                  <p>
+                    Enter returned money:{" "}
+                    <input
+                      type="number"
+                      value={returnAmount}
+                      onChange={(e) => setReturnAmount(e.target.value)}
+                      required
+                    />
+                  </p>
+                )}
+            </div> */}
             <button type="submit" className="button">
               OK
             </button>
@@ -854,32 +983,34 @@ function Sales() {
             </div>
             <div>
               {productsOfReturn && productsOfReturn.saleRecords && (
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Sales Date</th>
-                      <th>Product Name</th>
-                      <th>Quantity</th>
-                      <th>Total</th>
-                      <th>GST Category</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {productsOfReturn.saleRecords.map((record) => (
-                      <tr key={record.id}>
-                        <td>{productsOfReturn.sales_date}</td>
-                        <td>{record.product.name}</td>
-                        <td>{record.quantity}</td>
-                        <td>{record.total}</td>
-                        <td>{record.product.gstCategory}</td>
+                <div className="table-container">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Sales Date</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>GST Category</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {productsOfReturn.saleRecords.map((record) => (
+                        <tr key={record.id}>
+                          <td>{productsOfReturn.sales_date}</td>
+                          <td>{record.product.name}</td>
+                          <td>{record.current_quantity}</td>
+                          <td>{record.currentTotal}</td>
+                          <td>{record.product.gstCategory}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
             <div>
-              <p>Advance received:{productsOfReturn.advance}</p>
+              <p>Money already received:{productsOfReturn.advance}</p>
               <p>
                 Money yet to be received:{productsOfReturn.outstandingAmount}
               </p>
@@ -911,8 +1042,8 @@ function Sales() {
                 selectedOptionForm === "sales" && "active"
               }`}
               style={{
-                backgroundColor:
-                  selectedOptionForm === "sales" ? "black" : "", fontWeight: "900",
+                backgroundColor: selectedOptionForm === "sales" ? "black" : "",
+                fontWeight: "900",
               }}
               onClick={() => handleOptionChange("sales")}
             >
@@ -924,8 +1055,8 @@ function Sales() {
                 selectedOptionForm === "return" && "active"
               }`}
               style={{
-                backgroundColor:
-                  selectedOptionForm === "return" ? "black" : "", fontWeight: "900",
+                backgroundColor: selectedOptionForm === "return" ? "black" : "",
+                fontWeight: "900",
               }}
               onClick={() => handleOptionChange("return")}
             >
@@ -937,8 +1068,8 @@ function Sales() {
                 selectedOptionForm === "onHold" && "active"
               }`}
               style={{
-                backgroundColor:
-                  selectedOptionForm === "onHold" ? "black" : "", fontWeight: "900",
+                backgroundColor: selectedOptionForm === "onHold" ? "black" : "",
+                fontWeight: "900",
               }}
               onClick={() => handleOptionChange("onHold")}
             >

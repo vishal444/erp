@@ -21,7 +21,7 @@ function LoginAndRegister() {
       try {
         // Send login request to the API using Axios
         axios
-          .post("https://bisbuddy.xyz/api/erp/auth/authenticate", {
+          .post("http://localhost:8080/api/erp/auth/authenticate", {
             email,
             password,
           })
@@ -46,7 +46,7 @@ function LoginAndRegister() {
       try {
         // Send registration request to the API using Axios
         axios
-          .post("https://bisbuddy.xyz/api/erp/auth/register", {
+          .post("http://localhost:8080/api/erp/auth/register", {
             email,
             password,
           })
@@ -76,40 +76,44 @@ function LoginAndRegister() {
   }
 
   return (
-    <div className="listing-container-ash-notwide">
-      <form onSubmit={handleSubmit} style={{ paddingTop: "50px" }}>
-        <div className="listing-container">
-          <h1>{isLogin ? "Login" : "Register"}</h1>
-          <label>
-            Email:
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </label>
-          <br />
-          <label>
-            Password:
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-          </label>
-          <br />
-          <button type="submit" className="button">
-            {isLogin ? "Login" : "Register"}
-          </button>
-          <br />
-        </div>
-      </form>
-      <label>{isLogin ? "Dont have an account" : "Already have an account"}</label>
-      <button onClick={handleToggle} className="button">
-        {isLogin ? "Register" : "Login"}
-      </button>
-      {errorMessage && <p>{errorMessage}</p>}
-      <Link to="/forgot-password">Forgot password?</Link>
+    <div style={{paddingTop:"20px"}}>
+      <div className="listing-container-ash-notwide">
+        <form onSubmit={handleSubmit} style={{ paddingTop: "50px" }}>
+          <div className="listing-container">
+            <h1>{isLogin ? "Login" : "Register"}</h1>
+            <label>
+              Email:
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </label>
+            <br />
+            <label>
+              Password:
+              <input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </label>
+            <br />
+            <button type="submit" className="button">
+              {isLogin ? "Login" : "Register"}
+            </button>
+            <br />
+          </div>
+        </form>
+        <label>
+          {isLogin ? "Dont have an account" : "Already have an account"}
+        </label>
+        <button onClick={handleToggle} className="button">
+          {isLogin ? "Register" : "Login"}
+        </button>
+        {errorMessage && <p>{errorMessage}</p>}
+        <Link to="/forgot-password">Forgot password?</Link>
+      </div>
     </div>
   );
 }

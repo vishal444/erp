@@ -133,6 +133,8 @@ button {
   flex-direction: column;
   align-items: center;
   max-width: 1000px;
+  min-width: 500px; /* Replace 400px with your desired minimum fixed size */
+  min-height: 350px;
   margin: 0 auto;
   padding: 20px;
   background-color: #f2f2f2;
@@ -140,11 +142,27 @@ button {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+
 .listing-container-ash {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 700px;
   max-width: 1000px;
+  min-height: 550px; 
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #b6b6b6;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.listing-container-ash-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 280px;
+  max-width: 1000px;
+  min-height: 550px; 
   margin: 0 auto;
   padding: 20px;
   background-color: #b6b6b6;
@@ -155,6 +173,7 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 600px;
   max-width: 300px;
   margin: 0 auto;
   padding: 10px;
@@ -268,3 +287,58 @@ button {
   max-height: 400px;
   /* overflow-y: auto; */
 }
+
+
+/* Add the transition for the color property */
+.fade-color {
+  transition: color 0.5s ease;
+}
+
+/* Define the faded color for the button */
+.fade-color {
+  color: gray;
+}
+/* CSS for the table container */
+.table-container {
+  display: flex;
+  justify-content: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: #b6b6b6;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* CSS for the table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center; /* Center align the content in the table cells */
+}
+
+/* CSS for table header */
+.table th {
+  background-color: #f2f2f2;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-width: 2px; /* Make the table header lines bold */
+}
+
+/* CSS for table cells */
+.table td {
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-width: 2px; /* Make the table cell lines bold */
+}
+
+/* Alternate row background color for better readability */
+.table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Hover effect on table rows */
+.table tr:hover {
+  background-color: #ddd;
+}
+
