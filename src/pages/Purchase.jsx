@@ -32,7 +32,7 @@ function Purchase() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [isReturnButtonClicked, setIsReturnButtonClicked] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false); // for button fading purpose
-  // const [returnAmount, setReturnAmount] = useState("");
+  const [givenReturnAmount, setGivenReturnAmount] = useState("");
 
   const { t } = useTranslation();
 
@@ -55,7 +55,7 @@ function Purchase() {
       };
       try {
         const productsResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `http://localhost:8080/api/erp/product/getAll/${userName}`,
           config
         );
         setProducts(productsResponse.data);
@@ -66,7 +66,7 @@ function Purchase() {
         }));
         setTransformedProducts(temp);
         const purchaseResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/purchases/${userName}`,
+          `http://localhost:8080/api/erp/purchases/${userName}`,
           config
         );
         setPurchase(purchaseResponse.data);
@@ -77,7 +77,7 @@ function Purchase() {
         }));
         setTransformedPurchases(purchaseTemp);
         const purchaseOutstandingResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/purchaseOutstanding/${userName}`,
+          `http://localhost:8080/api/erp/purchaseOutstanding/${userName}`,
           config
         );
         setPurchaseOutstanding(purchaseOutstandingResponse.data);
@@ -116,11 +116,10 @@ function Purchase() {
     setSelectedPurchaseId(newSelectedPurchaseId);
     // Make GET request to fetch the selected sale data
     const getSelectedPurchaseResponse = await axios.get(
-      `https://bisbuddy.xyz/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
+      `http://localhost:8080/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedPurchaseResponse.data);
-    console.log("selected purchaseId:", newSelectedPurchaseId);
   };
 
   // const handleOptionChange = (event) => {
@@ -211,7 +210,6 @@ function Purchase() {
       setSelectedPurchaseItem(purchaseItem);
     }
   };
-  console.log("purchase item:", selectedPurchaseItem);
   const handleDecreaseQuantity = (e) => {
     e.preventDefault();
     setSelectedPurchaseItem((prevState) => ({
@@ -240,6 +238,10 @@ function Purchase() {
       return;
     }
 
+    if (partPayment > actualPurchaseAmount) {
+      alert("paid mount cannot be more than the total purchase amount.");
+      return;
+    }
     const data = {
       date: "",
       purchase_quantity: quantity,
@@ -266,7 +268,7 @@ function Purchase() {
 
     try {
       const purchaseAdd = await axios.post(
-        "https://bisbuddy.xyz/api/erp/purchases/add",
+        "http://localhost:8080/api/erp/purchases/add",
         data,
         config
       );
@@ -280,7 +282,7 @@ function Purchase() {
       // Update inventory for all products in the purchase
       for (const item of selectedProductArray) {
         const inventoryPurchaseUdpate = await axios.put(
-          `https://bisbuddy.xyz/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
+          `http://localhost:8080/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
           null,
           configForPut
         );
@@ -301,10 +303,20 @@ function Purchase() {
 
   const handleSubmitReturn = async (event) => {
     event.preventDefault();
+    if (quantity > selectedPurchaseItem.current_quantity) {
+      alert("Entered quantity cannot be more than the total Quantity.");
+      return;
+    }
+    if (givenReturnAmount && givenReturnAmount > productsOfReturn.outstandingAmount -
+      (selectedPurchaseItem.currentTotal -
+        selectedPurchaseItem.price * quantityAfterReturn)) {
+      alert("paid mount cannot be more than the total return amount.");
+      return;
+    }
     const userName = localStorage.getItem("email");
     const calc1 = selectedPurchaseItem.price * quantityAfterReturn;
     const amount = selectedPurchaseItem.currentTotal - calc1;
-    console.log("return amount: ", amount);
+
     // Get the token from localStorage
     const token = localStorage.getItem("token");
     const config = {
@@ -314,14 +326,14 @@ function Purchase() {
     };
     try {
       const inventoryUpdateResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `http://localhost:8080/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(inventoryUpdateResponse.data);
 
       const purchaseUpdateResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `http://localhost:8080/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
@@ -335,14 +347,14 @@ function Purchase() {
         (selectedPurchaseItem?.currentTotal || 0) -
         (selectedPurchaseItem?.price || 0) * quantityAfterReturn -
         productsOfReturn.outstandingAmount;
-      console.log("return aount:", returnAmount);
+
       const deductOutstandingAmount = amount - returnAmount;
 
       // To deduct the outstanding amount
       if (productsOfReturn.outstandingAmount != null) {
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -353,10 +365,10 @@ function Purchase() {
       }
     } else {
       if (productsOfReturn.outstandingAmount != null) {
-        const deductOutstandingAmount = amount;
+        const deductOutstandingAmount = amount + givenReturnAmount;
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -373,9 +385,14 @@ function Purchase() {
     setDirectExpense("");
     setQuantity("");
     setQuantityAfterReturn("");
+    setGivenReturnAmount("");
   };
   const handlePartPayment = async (event) => {
     event.preventDefault();
+    if (restOfPayment && restOfPayment > productsOfReturn.outstandingAmount) {
+      alert("Received amount cannot be more than the outstanding amount.");
+      return;
+    }
     const userName = localStorage.getItem("email");
     // Get the token from localStorage
     const token = localStorage.getItem("token");
@@ -386,7 +403,7 @@ function Purchase() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
+        `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
         null,
         configForPut
       );
@@ -655,19 +672,22 @@ function Purchase() {
                   </div>
                 )}
             </div>
-            {/* <div>
-              {productsOfReturn.outstandingAmount !== 0 &&
+            <div>
+              {productsOfReturn.outstandingAmount !== 0 && productsOfReturn.outstandingAmount >
+                  (selectedPurchaseItem?.currentTotal || 0) -
+                    (selectedPurchaseItem?.price || 0) *
+                      quantityAfterReturn &&
                 isReturnButtonClicked && (
-                  <p>
-                    Enter received money:{" "}
+                  <p style={{fontWeight: "600"}}>
+                    Enter paid money:{" "}
                     <input
                       type="number"
-                      value={returnAmount}
-                      onChange={(e) => setReturnAmount(e.target.value)}
+                      value={givenReturnAmount}
+                      onChange={(e) => setGivenReturnAmount(parseFloat(e.target.value))}
                     />
                   </p>
                 )}
-            </div> */}
+            </div>
             <button type="submit" className="button">
               Ok
             </button>

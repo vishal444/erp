@@ -81,7 +81,7 @@ function LoginAndRegister() {
         <form onSubmit={handleSubmit} style={{ paddingTop: "50px" }}>
           <div className="listing-container-login">
             <h1>{isLogin ? "Login" : "Register"}</h1>
-            <label>
+            <label style={{fontWeight: "600"}}>
               Email:
               <input
                 type="email"
@@ -90,7 +90,7 @@ function LoginAndRegister() {
               />
             </label>
             <br />
-            <label>
+            <label style={{fontWeight: "600"}}>
               Password:
               <input
                 type="password"

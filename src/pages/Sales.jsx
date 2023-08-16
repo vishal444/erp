@@ -4,7 +4,6 @@ import i18next from "i18next";
 import axios from "axios";
 import Select from "react-select";
 
-
 function Sales() {
   const [selectedOptionForm, setSelectedOptionForm] = useState("sales");
   const [products, setProducts] = useState([]);
@@ -41,7 +40,7 @@ function Sales() {
   const [selectRadio, setSelectRadio] = useState(false);
   const [isReturnButtonClicked, setIsReturnButtonClicked] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false); // for button fading purpose
-  // const [returnAmount, setReturnAmount] = useState("");
+  const [returnAmountReceived, setReturnAmountReceived] = useState("");
 
   const { t } = useTranslation();
 
@@ -64,7 +63,7 @@ function Sales() {
     async function fetchData() {
       try {
         const productsResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `http://localhost:8080/api/erp/product/getAll/${userName}`,
           config
         );
 
@@ -79,12 +78,12 @@ function Sales() {
         }
 
         const inventoryResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/inventory/getAll/${userName}`,
+          `http://localhost:8080/api/erp/inventory/getAll/${userName}`,
           config
         );
         setInventory(inventoryResponse.data);
         const salesResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/sales/${userName}`,
+          `http://localhost:8080/api/erp/sales/${userName}`,
           config
         );
         setSales(salesResponse.data);
@@ -98,7 +97,7 @@ function Sales() {
         }
 
         const salesOutstandingResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/salesOutstanding/${userName}`,
+          `http://localhost:8080/api/erp/salesOutstanding/${userName}`,
           config
         );
         setSalesOutstanding(salesOutstandingResponse.data);
@@ -113,12 +112,12 @@ function Sales() {
           setTransformedSalesOutstanding(salesOutstandingTemp);
         }
         const customersResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/customer/getAll/${userName}`,
+          `http://localhost:8080/api/erp/customer/getAll/${userName}`,
           config
         );
         setCustomers(customersResponse.data);
         const companyResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/company/${userName}`,
+          `http://localhost:8080/api/erp/company/${userName}`,
           config
         );
         setCompanyData(companyResponse.data);
@@ -139,15 +138,12 @@ function Sales() {
       setAddToProductArrayButtonDisabled(false); // the scanning event was triggering addToProductArray function !!
       if (event.key === "Enter") {
         if (updatedBarcodeData.length !== 18) {
-          console.log("Invalid barcode data: " + updatedBarcodeData);
           updatedBarcodeData = "";
           setBarcode(updatedBarcodeData); // Clear the barcode state
           return;
         }
-        console.log("Scanned barcode: " + updatedBarcodeData);
         let decodedId = updatedBarcodeData.substring(3, 12);
         decodedId = parseInt(decodedId).toString();
-        console.log("Decoded: ", decodedId);
         setSelectedProductId(decodedId);
         // Set the success message
         var confirmationLabel = document.getElementById("barcode_confirmation");
@@ -209,7 +205,6 @@ function Sales() {
     const newSaleAmount =
       actualSaleAmount + productToAdd.selling_price * quantity;
     setActualSaleAmount(newSaleAmount);
-    console.log(" product id: ", selectedProductId);
     setSelectedProductArray([
       ...selectedProductArray,
       {
@@ -255,11 +250,10 @@ function Sales() {
     setSelectedSalesId(newSelectedSalesId);
     // Make GET request to fetch the selected sale data
     const getSelectedSaleResponse = await axios.get(
-      `https://bisbuddy.xyz/api/erp/salesById/${newSelectedSalesId}/${userName}`
+      `http://localhost:8080/api/erp/salesById/${newSelectedSalesId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedSaleResponse.data);
-    console.log("selected saleId:", newSelectedSalesId);
   };
   ///////////////////////////////////////
   const handleProductChangeForReturn = (e) => {
@@ -278,6 +272,10 @@ function Sales() {
 
   const handleDecreaseQuantity = (e) => {
     e.preventDefault();
+    if (quantity > selectedSaleItem.current_quantity) {
+      alert("Received mount cannot be more than the total sale amount.");
+      return;
+    }
     setSelectedSaleItem((prevState) => ({
       ...prevState,
       current_quantity: prevState.current_quantity - quantity,
@@ -460,7 +458,10 @@ function Sales() {
       alert("Please add product to the list");
       return;
     }
-
+    if (advance > actualSaleAmount) {
+      alert("Received amount cannot be more than the total sale amount.");
+      return;
+    }
     // Check if the quantity in inventory is more than the quantity of the products being sold
     let allProductsAvailable = true;
     for (const item of selectedProductArray) {
@@ -509,7 +510,7 @@ function Sales() {
     };
     try {
       const addSaleResponse = await axios.post(
-        "https://bisbuddy.xyz/api/erp/sales/add",
+        "http://localhost:8080/api/erp/sales/add",
         salesData,
         config
       );
@@ -526,7 +527,7 @@ function Sales() {
       // Update inventory for all products in the sale
       for (const item of selectedProductArray) {
         const updateInventoryResponse = await axios.put(
-          `https://bisbuddy.xyz/api/erp/inventory/sale/update/${item.product}/${userName}?quantity=${item.quantity}`,
+          `http://localhost:8080/api/erp/inventory/sale/update/${item.product}/${userName}?quantity=${item.quantity}`,
           null,
           configForPut
         );
@@ -546,6 +547,17 @@ function Sales() {
 
   const handleSubmitReturn = async (event) => {
     event.preventDefault();
+    if (quantity > selectedSaleItem.current_quantity) {
+      alert("Entered quantity cannot be more than the total Quantity.");
+      return;
+    }
+    if (returnAmountReceived && returnAmountReceived > productsOfReturn.outstandingAmount -
+      (selectedSaleItem.currentTotal -
+        selectedSaleItem.product.selling_price *
+          quantityAfterReturn)) {
+      alert("Received amount cannot be more than the outstanding amount.");
+      return;
+    }
     const userName = localStorage.getItem("email");
     const calc1 = selectedSaleItem.product.selling_price * quantityAfterReturn;
     const amount = selectedSaleItem.currentTotal - calc1;
@@ -559,14 +571,14 @@ function Sales() {
     };
     try {
       const updateInventoryResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/inventory/sale/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `http://localhost:8080/api/erp/inventory/sale/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(updateInventoryResponse.data);
 
       const updateSalesReturnResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/sales/return/${selectedSalesId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `http://localhost:8080/api/erp/sales/return/${selectedSalesId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
@@ -581,13 +593,12 @@ function Sales() {
         (selectedSaleItem?.currentTotal || 0) -
         (selectedSaleItem?.product?.selling_price || 0) * quantityAfterReturn -
         productsOfReturn.outstandingAmount;
-      console.log("return aount:", returnAmount);
       const deductOutstandingAmount = amount - returnAmount;
       // To deduct the outstanding amount
       if (productsOfReturn.outstandingAmount != null) {
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -596,13 +607,15 @@ function Sales() {
           console.log(error);
         }
       }
+      setReturnAmountReceived("");
     } else {
-      const deductOutstandingAmount = amount;
+      const deductOutstandingAmount = amount + returnAmountReceived;
+      console.log('Deduct Outstanding Amount (greater than):', deductOutstandingAmount);
       // To deduct the outstanding amount
       if (productsOfReturn.outstandingAmount != null) {
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -620,6 +633,10 @@ function Sales() {
   };
   const handleAdvancePayment = async (event) => {
     event.preventDefault();
+    if (restOfAdvance && restOfAdvance > productsOfReturn.outstandingAmount) {
+      alert("Received amount cannot be more than the outstanding amount.");
+      return;
+    }
     const userName = localStorage.getItem("email");
     // Get the token from localStorage
     const token = localStorage.getItem("token");
@@ -630,7 +647,7 @@ function Sales() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.xyz/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${restOfAdvance}`,
+        `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${restOfAdvance}`,
         null,
         configForPut
       );
@@ -884,7 +901,7 @@ function Sales() {
             </div>
             <div>
               {selectedSaleItem && isReturnButtonClicked && (
-                <p style={{fontWeight: "600"}}>
+                <p style={{fontWeight: "600"}} >
                   Product Return Amount:{" "}
                   {selectedSaleItem.currentTotal -
                     (selectedSaleItem.product?.selling_price || 0) *
@@ -929,7 +946,7 @@ function Sales() {
                     (selectedSaleItem.product?.selling_price || 0) *
                       quantityAfterReturn && (
                   <div>
-                    <p style={{fontWeight: "600"}}>
+                    <p style={{fontWeight: "600"}} >
                       Balance money remainning:{" "}
                       {productsOfReturn.outstandingAmount -
                         (selectedSaleItem.currentTotal -
@@ -939,25 +956,25 @@ function Sales() {
                   </div>
                 )}
             </div>
-            {/* <div>
+            <div>
               {selectedSaleItem &&
                 productsOfReturn.outstandingAmount !== 0 &&
-                productsOfReturn.outstandingAmount <
+                productsOfReturn.outstandingAmount >
                   (selectedSaleItem?.currentTotal || 0) -
                     (selectedSaleItem?.product?.selling_price || 0) *
                       quantityAfterReturn &&
                 isReturnButtonClicked && (
-                  <p>
-                    Enter returned money:{" "}
+                  <p style={{fontWeight: "600"}}>
+                    Enter money received:{" "}
                     <input
                       type="number"
-                      value={returnAmount}
-                      onChange={(e) => setReturnAmount(e.target.value)}
+                      value={returnAmountReceived}
+                      onChange={(e) => setReturnAmountReceived(parseFloat(e.target.value))}
                       required
                     />
                   </p>
                 )}
-            </div> */}
+            </div>
             <button type="submit" className="button">
               OK
             </button>
@@ -1019,7 +1036,7 @@ function Sales() {
             <div>
               {productsOfReturn && selectedSalesId && (
                 <div>
-                  <p style={{fontWeight: "600"}}>Money already received:{productsOfReturn.advance}</p>
+                  <p style={{fontWeight: "600"}}  >Money already received:{productsOfReturn.advance}</p>
                   <p style={{fontWeight: "600"}}>
                     Money yet to be received:
                     {productsOfReturn.outstandingAmount}

@@ -31,10 +31,10 @@ function Listing() {
         <table>
           <thead>
             <tr>
-              <th style={{ padding: "8px 16px" }}>ID</th>
-              <th style={{ padding: "8px 16px" }}>Product Name</th>
-              <th style={{ padding: "8px 16px" }}>Quantity</th>
-              <th style={{ padding: "8px 16px" }}>Buying Price</th>
+              <th style={{textAlign: "center", padding: "8px 16px" ,fontWeight: "600" }}>ID</th>
+              <th style={{textAlign: "center", padding: "8px 16px" ,fontWeight: "600" }}>Product Name</th>
+              <th style={{textAlign: "center", padding: "8px 16px" ,fontWeight: "600" }}>Quantity</th>
+              <th style={{textAlign: "center", padding: "8px 16px" ,fontWeight: "600" }}>Buying Price</th>
             </tr>
           </thead>
           <tbody>
