@@ -885,7 +885,7 @@ function Sales() {
                         type="number"
                         value={quantity}
                         onChange={(e) =>
-                          setQuantity(parseFloat(e.target.value))
+                          setQuantity(e.target.value)
                         }
                       />
                       <br />
@@ -976,7 +976,7 @@ function Sales() {
                       type="number"
                       value={returnAmountReceived}
                       onChange={(e) =>
-                        setReturnAmountReceived(parseFloat(e.target.value))
+                        setReturnAmountReceived(e.target.value)
                       }
                       required
                     />
@@ -1058,7 +1058,7 @@ function Sales() {
                     type="number"
                     value={restOfAdvance}
                     onChange={(e) =>
-                      setRestOfAdvance(parseFloat(e.target.value))
+                      setRestOfAdvance(e.target.value)
                     }
                   />
                   <br />
