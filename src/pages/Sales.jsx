@@ -37,7 +37,6 @@ function Sales() {
     useState(false);
   const [companyData, setCompanyData] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [selectRadio, setSelectRadio] = useState(false);
   const [isReturnButtonClicked, setIsReturnButtonClicked] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false); // for button fading purpose
   const [returnAmountReceived, setReturnAmountReceived] = useState("");
@@ -165,7 +164,7 @@ function Sales() {
   const handleOptionChange = (option) => {
     setSelectedOptionForm(option);
   };
-
+ 
 
   // console.log("inventory:", sales);
   // const handleProductIdChange = (e) => {
@@ -547,10 +546,13 @@ function Sales() {
       alert("Entered quantity cannot be more than the total Quantity.");
       return;
     }
-    if (returnAmountReceived && returnAmountReceived > productsOfReturn.outstandingAmount -
-      (selectedSaleItem.currentTotal -
-        selectedSaleItem.product.selling_price *
-          quantityAfterReturn)) {
+    if (
+      returnAmountReceived &&
+      returnAmountReceived >
+        productsOfReturn.outstandingAmount -
+          (selectedSaleItem.currentTotal -
+            selectedSaleItem.product.selling_price * quantityAfterReturn)
+    ) {
       alert("Received amount cannot be more than the outstanding amount.");
       return;
     }
@@ -606,7 +608,10 @@ function Sales() {
       setReturnAmountReceived("");
     } else {
       const deductOutstandingAmount = amount + returnAmountReceived;
-      console.log('Deduct Outstanding Amount (greater than):', deductOutstandingAmount);
+      console.log(
+        "Deduct Outstanding Amount (greater than):",
+        deductOutstandingAmount
+      );
       // To deduct the outstanding amount
       if (productsOfReturn.outstandingAmount != null) {
         try {
@@ -668,7 +673,7 @@ function Sales() {
               }}
             >
               <div style={{ flexBasis: "40%", paddingRight: "10px" }}>
-                <label style={{fontWeight: "600"}}>
+                <label style={{ fontWeight: "600" }}>
                   {t("select_product")}:{" "}
                   <div style={{ width: "250px" }}>
                     <Select
@@ -688,11 +693,13 @@ function Sales() {
                     style={{ color: "green", fontWeight: "bold" }}
                   ></label>
                 )}
-                <label style={{fontWeight: "600"}}>{t("quantity")}:</label>
+                <label style={{ fontWeight: "600" }}>{t("quantity")}:</label>
                 <input
                   type="number"
                   value={quantity}
-                  onChange={(e) => setQuantity(parseFloat(e.target.value))}
+                  onChange={(e) => {
+                    setQuantity(e.target.value);
+                  }}
                 />
                 <br />
                 <button
@@ -709,10 +716,10 @@ function Sales() {
                     <table className="table">
                       <thead>
                         <tr>
-                          <th style={{fontWeight: "600"}}>Name</th>
-                          <th style={{fontWeight: "600"}}>Price</th>
-                          <th style={{fontWeight: "600"}}>Quantity</th>
-                          <th style={{fontWeight: "600"}}>Action</th>
+                          <th style={{ fontWeight: "600" }}>Name</th>
+                          <th style={{ fontWeight: "600" }}>Price</th>
+                          <th style={{ fontWeight: "600" }}>Quantity</th>
+                          <th style={{ fontWeight: "600" }}>Action</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -743,14 +750,14 @@ function Sales() {
                     </table>
                   </div>
                 )}
-                <div style={{fontWeight: "600"}}>
+                <div style={{ fontWeight: "600" }}>
                   {actualSaleAmount !== 0 ? "Total: " + actualSaleAmount : ""}
                 </div>
               </div>
             </div>
 
             <div style={{ paddingTop: "10px" }}>
-              <label style={{fontWeight: "600"}}>
+              <label style={{ fontWeight: "600" }}>
                 {t("select_customer")}:
                 <select
                   value={selectedCustomerId}
@@ -770,23 +777,27 @@ function Sales() {
               </label>
             </div>
             <div style={{ paddingTop: "10px" }}>
-              <label style={{fontWeight: "600"}}>{t("payment_received")}:</label>
+              <label style={{ fontWeight: "600" }}>
+                {t("payment_received")}:
+              </label>
               <input
                 type="number"
                 value={advance}
-                onChange={(e) => setAdvance(parseFloat(e.target.value))}
+                onChange={(e) => {
+                  setAdvance(e.target.value);
+                }}
               />
             </div>
             <br />
             <div>
-              <label style={{paddingInlineEnd:"5px", fontWeight: "600"}}>{t("print_invoice")}</label>
+              <label style={{paddingInlineEnd:"5px"}}>{t("print_invoice")}</label>
               <input
                 type="checkbox" // Use checkbox input type
                 checked={invoiceTrigger} // Bind the checked attribute to the state
                 onChange={() => setInvoiceTrigger(!invoiceTrigger)} // Toggle the invoiceTrigger state
               />
-              <br />
             </div>
+            <br />
             <button
               type="submit"
               onClick={handleSubmitSales}
@@ -809,7 +820,7 @@ function Sales() {
               }}
             >
               <div style={{ flexBasis: "40%", paddingRight: "10px" }}>
-                <label style={{fontWeight: "600"}}>
+                <label style={{ fontWeight: "600" }}>
                   Select a sale:
                   <div style={{ width: "150px" }}>
                     <Select
@@ -844,9 +855,9 @@ function Sales() {
                       <table className="table">
                         <thead>
                           <tr>
-                            <th style={{fontWeight: "600"}}>Name</th>
-                            <th style={{fontWeight: "600"}}>Quantity</th>
-                            <th style={{fontWeight: "600"}}>Total</th>
+                            <th style={{ fontWeight: "600" }}>Name</th>
+                            <th style={{ fontWeight: "600" }}>Quantity</th>
+                            <th style={{ fontWeight: "600" }}>Total</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -867,11 +878,15 @@ function Sales() {
                     </div>
 
                     <div>
-                      <label style={{fontWeight: "600"}}>Enter quantity returned:</label>
+                      <label style={{ fontWeight: "600" }}>
+                        Enter quantity returned:
+                      </label>
                       <input
                         type="number"
                         value={quantity}
-                        onChange={(e) => setQuantity(parseFloat(e.target.value))}
+                        onChange={(e) =>
+                          setQuantity(parseFloat(e.target.value))
+                        }
                       />
                       <br />
                       <button
@@ -892,7 +907,7 @@ function Sales() {
             </div>
             <div>
               {selectedSaleItem && isReturnButtonClicked && (
-                <p style={{fontWeight: "600"}} >
+                <p style={{ fontWeight: "600" }}>
                   Product Return Amount:{" "}
                   {selectedSaleItem.currentTotal -
                     (selectedSaleItem.product?.selling_price || 0) *
@@ -904,7 +919,7 @@ function Sales() {
             <div>
               {productsOfReturn.outstandingAmount !== 0 &&
                 isReturnButtonClicked && (
-                  <p style={{fontWeight: "600"}}>
+                  <p style={{ fontWeight: "600" }}>
                     Money Customer Owes: {productsOfReturn.outstandingAmount}
                   </p>
                 )}
@@ -918,7 +933,7 @@ function Sales() {
                       quantityAfterReturn &&
                 selectedSaleItem && (
                   <div>
-                    <p style={{fontWeight: "600"}}>
+                    <p style={{ fontWeight: "600" }}>
                       You only have to give back:{" "}
                       {(selectedSaleItem?.currentTotal || 0) -
                         (selectedSaleItem?.product?.selling_price || 0) *
@@ -937,7 +952,7 @@ function Sales() {
                     (selectedSaleItem.product?.selling_price || 0) *
                       quantityAfterReturn && (
                   <div>
-                    <p style={{fontWeight: "600"}} >
+                    <p style={{ fontWeight: "600" }}>
                       Balance money remainning:{" "}
                       {productsOfReturn.outstandingAmount -
                         (selectedSaleItem.currentTotal -
@@ -955,12 +970,14 @@ function Sales() {
                     (selectedSaleItem?.product?.selling_price || 0) *
                       quantityAfterReturn &&
                 isReturnButtonClicked && (
-                  <p style={{fontWeight: "600"}}>
+                  <p style={{ fontWeight: "600" }}>
                     Enter money received:{" "}
                     <input
                       type="number"
                       value={returnAmountReceived}
-                      onChange={(e) => setReturnAmountReceived(parseFloat(e.target.value))}
+                      onChange={(e) =>
+                        setReturnAmountReceived(parseFloat(e.target.value))
+                      }
                       required
                     />
                   </p>
@@ -983,7 +1000,7 @@ function Sales() {
                 display: "flex",
               }}
             >
-              <label style={{fontWeight: "600"}}>
+              <label style={{ fontWeight: "600" }}>
                 Select a sale:
                 <div style={{ width: "150px" }}>
                   <Select
@@ -1002,11 +1019,11 @@ function Sales() {
                   <table className="table">
                     <thead>
                       <tr>
-                        <th style={{fontWeight: "600"}}>Sales Date</th>
-                        <th style={{fontWeight: "600"}}>Product Name</th>
-                        <th style={{fontWeight: "600"}}>Quantity</th>
-                        <th style={{fontWeight: "600"}}>Total</th>
-                        <th style={{fontWeight: "600"}}>GST Category</th>
+                        <th style={{ fontWeight: "600" }}>Sales Date</th>
+                        <th style={{ fontWeight: "600" }}>Product Name</th>
+                        <th style={{ fontWeight: "600" }}>Quantity</th>
+                        <th style={{ fontWeight: "600" }}>Total</th>
+                        <th style={{ fontWeight: "600" }}>GST Category</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1027,16 +1044,22 @@ function Sales() {
             <div>
               {productsOfReturn && selectedSalesId && (
                 <div>
-                  <p style={{fontWeight: "600"}}  >Money already received:{productsOfReturn.advance}</p>
-                  <p style={{fontWeight: "600"}}>
+                  <p style={{ fontWeight: "600" }}>
+                    Money already received:{productsOfReturn.advance}
+                  </p>
+                  <p style={{ fontWeight: "600" }}>
                     Money yet to be received:
                     {productsOfReturn.outstandingAmount}
                   </p>
-                  <label style={{fontWeight: "600"}}>Enter Received money:</label>
+                  <label style={{ fontWeight: "600" }}>
+                    Enter Received money:
+                  </label>
                   <input
                     type="number"
                     value={restOfAdvance}
-                    onChange={(e) => setRestOfAdvance(parseFloat(e.target.value))}
+                    onChange={(e) =>
+                      setRestOfAdvance(parseFloat(e.target.value))
+                    }
                   />
                   <br />
                 </div>
