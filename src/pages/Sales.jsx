@@ -165,11 +165,7 @@ function Sales() {
   const handleOptionChange = (option) => {
     setSelectedOptionForm(option);
   };
-  const handleGenerateInvoice = (event) => {
-    event.preventDefault();
-    setSelectRadio(!selectRadio);
-    setInvoiceTrigger(true);
-  };
+
 
   // console.log("inventory:", sales);
   // const handleProductIdChange = (e) => {
@@ -696,7 +692,7 @@ function Sales() {
                 <input
                   type="number"
                   value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
+                  onChange={(e) => setQuantity(parseFloat(e.target.value))}
                 />
                 <br />
                 <button
@@ -778,21 +774,16 @@ function Sales() {
               <input
                 type="number"
                 value={advance}
-                onChange={(e) => setAdvance(e.target.value)}
+                onChange={(e) => setAdvance(parseFloat(e.target.value))}
               />
             </div>
             <br />
             <div>
-              <label style={{fontWeight: "600"}}>{t("print_invoice")}</label>
+              <label style={{paddingInlineEnd:"5px", fontWeight: "600"}}>{t("print_invoice")}</label>
               <input
-                type="radio"
-                id="generate-invoice"
-                name="invoice-option"
-                value="true"
-                checked={selectRadio}
-                onChange={handleGenerateInvoice}
-                // onClick={() => setSelectRadio(!selectRadio)} // Toggle the value on click
-                className="custom-radio"
+                type="checkbox" // Use checkbox input type
+                checked={invoiceTrigger} // Bind the checked attribute to the state
+                onChange={() => setInvoiceTrigger(!invoiceTrigger)} // Toggle the invoiceTrigger state
               />
               <br />
             </div>
@@ -880,7 +871,7 @@ function Sales() {
                       <input
                         type="number"
                         value={quantity}
-                        onChange={(e) => setQuantity(e.target.value)}
+                        onChange={(e) => setQuantity(parseFloat(e.target.value))}
                       />
                       <br />
                       <button
@@ -1045,7 +1036,7 @@ function Sales() {
                   <input
                     type="number"
                     value={restOfAdvance}
-                    onChange={(e) => setRestOfAdvance(e.target.value)}
+                    onChange={(e) => setRestOfAdvance(parseFloat(e.target.value))}
                   />
                   <br />
                 </div>

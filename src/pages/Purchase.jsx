@@ -446,7 +446,7 @@ function Purchase() {
                   <input
                     type="number"
                     value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
+                    onChange={(e) => setQuantity(parseFloat(e.target.value))}
                   />
                 </div>
                 <div>
@@ -454,7 +454,7 @@ function Purchase() {
                   <input
                     type="number"
                     value={selectedPrice}
-                    onChange={(e) => setSelectedPrice(e.target.value)}
+                    onChange={(e) => setSelectedPrice(parseFloat(e.target.value))}
                   />
                 </div>
                 <button onClick={AddToProductArray} className="button">
@@ -514,7 +514,7 @@ function Purchase() {
               <input
                 type="number"
                 value={directExpense}
-                onChange={(e) => setDirectExpense(e.target.value)}
+                onChange={(e) => setDirectExpense(parseFloat(e.target.value))}
               />
             </div>
             <div style={{ paddingTop: "10px" }}>
@@ -522,7 +522,7 @@ function Purchase() {
               <input
                 type="number"
                 value={partPayment}
-                onChange={(e) => setPartPayment(e.target.value)}
+                onChange={(e) => setPartPayment(parseFloat(e.target.value))}
               />
             </div>
             <button type="submit" className="button">
@@ -604,7 +604,7 @@ function Purchase() {
                       <input
                         type="number"
                         value={quantity}
-                        onChange={(e) => setQuantity(e.target.value)}
+                        onChange={(e) => setQuantity(parseFloat(e.target.value))}
                       />
                       <br />
                       <button
@@ -756,7 +756,7 @@ function Purchase() {
                     <input
                       type="number"
                       value={restOfPayment}
-                      onChange={(e) => setRestOfPayment(e.target.value)}
+                      onChange={(e) => setRestOfPayment(parseFloat(e.target.value))}
                     />
                   </div>
                 </div>
