@@ -538,6 +538,7 @@ function Sales() {
     setSelectedProductId("");
     setQuantity("");
     setAdvance("");
+    setInvoiceTrigger(false);
   };
 
   const handleSubmitReturn = async (event) => {
