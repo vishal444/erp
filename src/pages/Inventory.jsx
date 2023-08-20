@@ -23,7 +23,7 @@ function Listing() {
     };
 
     axios
-      .get(`http://localhost:8080/api/erp/inventory/getAll/${userName}`, config)
+      .get(`https://bisbuddy.xyz/api/erp/inventory/getAll/${userName}`, config)
       .then((response) => {
         setInventory(response.data);
       })

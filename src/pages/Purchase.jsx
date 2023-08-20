@@ -55,7 +55,7 @@ function Purchase() {
       };
       try {
         const productsResponse = await axios.get(
-          `http://localhost:8080/api/erp/product/getAll/${userName}`,
+          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
           config
         );
         setProducts(productsResponse.data);
@@ -66,7 +66,7 @@ function Purchase() {
         }));
         setTransformedProducts(temp);
         const purchaseResponse = await axios.get(
-          `http://localhost:8080/api/erp/purchases/${userName}`,
+          `https://bisbuddy.xyz/api/erp/purchases/${userName}`,
           config
         );
         setPurchase(purchaseResponse.data);
@@ -77,7 +77,7 @@ function Purchase() {
         }));
         setTransformedPurchases(purchaseTemp);
         const purchaseOutstandingResponse = await axios.get(
-          `http://localhost:8080/api/erp/purchaseOutstanding/${userName}`,
+          `https://bisbuddy.xyz/api/erp/purchaseOutstanding/${userName}`,
           config
         );
         setPurchaseOutstanding(purchaseOutstandingResponse.data);
@@ -116,7 +116,7 @@ function Purchase() {
     setSelectedPurchaseId(newSelectedPurchaseId);
     // Make GET request to fetch the selected sale data
     const getSelectedPurchaseResponse = await axios.get(
-      `http://localhost:8080/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
+      `https://bisbuddy.xyz/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedPurchaseResponse.data);
@@ -268,7 +268,7 @@ function Purchase() {
 
     try {
       const purchaseAdd = await axios.post(
-        "http://localhost:8080/api/erp/purchases/add",
+        "https://bisbuddy.xyz/api/erp/purchases/add",
         data,
         config
       );
@@ -282,7 +282,7 @@ function Purchase() {
       // Update inventory for all products in the purchase
       for (const item of selectedProductArray) {
         const inventoryPurchaseUdpate = await axios.put(
-          `http://localhost:8080/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
+          `https://bisbuddy.xyz/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
           null,
           configForPut
         );
@@ -326,14 +326,14 @@ function Purchase() {
     };
     try {
       const inventoryUpdateResponse = await axios.put(
-        `http://localhost:8080/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `https://bisbuddy.xyz/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(inventoryUpdateResponse.data);
 
       const purchaseUpdateResponse = await axios.put(
-        `http://localhost:8080/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `https://bisbuddy.xyz/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
@@ -354,7 +354,7 @@ function Purchase() {
       if (productsOfReturn.outstandingAmount != null) {
         try {
           const response = await axios.put(
-            `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -368,7 +368,7 @@ function Purchase() {
         const deductOutstandingAmount = amount + givenReturnAmount;
         try {
           const response = await axios.put(
-            `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -403,7 +403,7 @@ function Purchase() {
     };
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
+        `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
         null,
         configForPut
       );
