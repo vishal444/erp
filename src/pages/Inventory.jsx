@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import i18next from "i18next";
 import axios from "axios";
 
 function Listing() {
   const [inventory, setInventory] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
+      ////// for language ///////////
+      const lang = localStorage.getItem("lang");
+      if (lang) {
+        i18next.changeLanguage(lang);
+      }
     // Fetch the list of products and customers and set the state
     const token = localStorage.getItem("token");
     const userName = localStorage.getItem("email");
@@ -15,7 +23,7 @@ function Listing() {
     };
 
     axios
-      .get(`https://bisbuddy.xyz/api/erp/inventory/getAll/${userName}`, config)
+      .get(`http://localhost:8080/api/erp/inventory/getAll/${userName}`, config)
       .then((response) => {
         setInventory(response.data);
       })
@@ -26,15 +34,15 @@ function Listing() {
 
   return (
     <div className="listing-container">
-      <h1>Inventory</h1>
+      <h1 style={{fontWeight: "600"}}>{t("inventory_page")}</h1>
       <div className="table-container">
         <table>
           <thead>
             <tr>
-              <th style={{textAlign: "center", padding: "8px 16px" ,fontWeight: "600" }}>ID</th>
-              <th style={{textAlign: "center", padding: "8px 16px" ,fontWeight: "600" }}>Product Name</th>
-              <th style={{textAlign: "center", padding: "8px 16px" ,fontWeight: "600" }}>Quantity</th>
-              <th style={{textAlign: "center", padding: "8px 16px" ,fontWeight: "600" }}>Buying Price</th>
+              <th style={{ textAlign: "center",padding: "8px 16px" }}>ID</th>
+              <th style={{ textAlign: "center",padding: "8px 16px" }}>Product Name</th>
+              <th style={{ textAlign: "center",padding: "8px 16px" }}>Quantity</th>
+              <th style={{ textAlign: "center",padding: "8px 16px" }}>Buying Price</th>
             </tr>
           </thead>
           <tbody>

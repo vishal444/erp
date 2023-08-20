@@ -62,7 +62,7 @@ function Sales() {
     async function fetchData() {
       try {
         const productsResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `http://localhost:8080/api/erp/product/getAll/${userName}`,
           config
         );
 
@@ -77,12 +77,12 @@ function Sales() {
         }
 
         const inventoryResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/inventory/getAll/${userName}`,
+          `http://localhost:8080/api/erp/inventory/getAll/${userName}`,
           config
         );
         setInventory(inventoryResponse.data);
         const salesResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/sales/${userName}`,
+          `http://localhost:8080/api/erp/sales/${userName}`,
           config
         );
         setSales(salesResponse.data);
@@ -96,7 +96,7 @@ function Sales() {
         }
 
         const salesOutstandingResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/salesOutstanding/${userName}`,
+          `http://localhost:8080/api/erp/salesOutstanding/${userName}`,
           config
         );
         setSalesOutstanding(salesOutstandingResponse.data);
@@ -111,12 +111,12 @@ function Sales() {
           setTransformedSalesOutstanding(salesOutstandingTemp);
         }
         const customersResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/customer/getAll/${userName}`,
+          `http://localhost:8080/api/erp/customer/getAll/${userName}`,
           config
         );
         setCustomers(customersResponse.data);
         const companyResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/company/${userName}`,
+          `http://localhost:8080/api/erp/company/${userName}`,
           config
         );
         setCompanyData(companyResponse.data);
@@ -245,7 +245,7 @@ function Sales() {
     setSelectedSalesId(newSelectedSalesId);
     // Make GET request to fetch the selected sale data
     const getSelectedSaleResponse = await axios.get(
-      `https://bisbuddy.xyz/api/erp/salesById/${newSelectedSalesId}/${userName}`
+      `http://localhost:8080/api/erp/salesById/${newSelectedSalesId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedSaleResponse.data);
@@ -505,7 +505,7 @@ function Sales() {
     };
     try {
       const addSaleResponse = await axios.post(
-        "https://bisbuddy.xyz/api/erp/sales/add",
+        "http://localhost:8080/api/erp/sales/add",
         salesData,
         config
       );
@@ -522,7 +522,7 @@ function Sales() {
       // Update inventory for all products in the sale
       for (const item of selectedProductArray) {
         const updateInventoryResponse = await axios.put(
-          `https://bisbuddy.xyz/api/erp/inventory/sale/update/${item.product}/${userName}?quantity=${item.quantity}`,
+          `http://localhost:8080/api/erp/inventory/sale/update/${item.product}/${userName}?quantity=${item.quantity}`,
           null,
           configForPut
         );
@@ -569,14 +569,14 @@ function Sales() {
     };
     try {
       const updateInventoryResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/inventory/sale/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `http://localhost:8080/api/erp/inventory/sale/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(updateInventoryResponse.data);
 
       const updateSalesReturnResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/sales/return/${selectedSalesId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `http://localhost:8080/api/erp/sales/return/${selectedSalesId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
@@ -596,7 +596,7 @@ function Sales() {
       if (productsOfReturn.outstandingAmount != null) {
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -616,7 +616,7 @@ function Sales() {
       if (productsOfReturn.outstandingAmount != null) {
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -648,7 +648,7 @@ function Sales() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.xyz/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${restOfAdvance}`,
+        `http://localhost:8080/api/erp/sales/advance/${selectedSalesId}/${userName}?nextAdvance=${restOfAdvance}`,
         null,
         configForPut
       );
@@ -790,7 +790,7 @@ function Sales() {
             </div>
             <br />
             <div>
-              <label style={{paddingInlineEnd:"5px"}}>{t("print_invoice")}</label>
+              <label style={{paddingInlineEnd:"5px", fontWeight: "600"}}>{t("print_invoice")}</label>
               <input
                 type="checkbox" // Use checkbox input type
                 checked={invoiceTrigger} // Bind the checked attribute to the state
@@ -885,7 +885,7 @@ function Sales() {
                         type="number"
                         value={quantity}
                         onChange={(e) =>
-                          setQuantity(e.target.value)
+                          setQuantity(parseFloat(e.target.value))
                         }
                       />
                       <br />
@@ -976,7 +976,7 @@ function Sales() {
                       type="number"
                       value={returnAmountReceived}
                       onChange={(e) =>
-                        setReturnAmountReceived(e.target.value)
+                        setReturnAmountReceived(parseFloat(e.target.value))
                       }
                       required
                     />
@@ -1058,7 +1058,7 @@ function Sales() {
                     type="number"
                     value={restOfAdvance}
                     onChange={(e) =>
-                      setRestOfAdvance(e.target.value)
+                      setRestOfAdvance(parseFloat(e.target.value))
                     }
                   />
                   <br />
@@ -1088,7 +1088,7 @@ function Sales() {
               }}
               onClick={() => handleOptionChange("sales")}
             >
-              make new sales
+              {t("sales_side_nwSales")}
             </button>
             <button
               type="button"
@@ -1101,7 +1101,7 @@ function Sales() {
               }}
               onClick={() => handleOptionChange("return")}
             >
-              make returns
+              {t("sales_side_return")}
             </button>
             <button
               type="button"
@@ -1114,7 +1114,7 @@ function Sales() {
               }}
               onClick={() => handleOptionChange("onHold")}
             >
-              payment not completed
+              {t("sales_side_payNotCompleted")}
             </button>
           </div>
         </div>

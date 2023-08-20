@@ -19,5 +19,14 @@
     "select_customer": "Select customer",
     "payment_received": " Payment received",
     "enterStockDetails": " Enter your stock details",
-    "graph": "Sales Graph"
+    "graph": "Sales Graph",
+    "sales_side_nwSales": "make new sales",
+    "sales_side_return": "make returns",
+    "sales_side_payNotCompleted": "payment not completed",
+    "purchase_side_nwPurchase": "make new purchase",
+    "purchase_side_return": "make returns",
+    "purchase_side_payNotCompleted": "payment not completed",
+    "purchase_priceOfOneItem": "Enter price of one item",
+    "purchase_amountPaid": "Enter amount paid",
+    "inventory_page": "Inventory"
 }

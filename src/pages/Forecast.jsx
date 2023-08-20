@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
+import i18next from "i18next";
 import Chart from "chart.js/auto";
 
 export default function Sales() {
@@ -9,6 +11,15 @@ export default function Sales() {
   const [showAllGraph, setShowAllGraph] = useState(true);
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    ////// for language ///////////
+    const lang = localStorage.getItem("lang");
+    if (lang) {
+      i18next.changeLanguage(lang);
+    }
+  }, []);
 
   const fetchData = async () => {
     const userName = localStorage.getItem("email");
@@ -20,11 +31,11 @@ export default function Sales() {
         },
       };
       const response = await axios.get(
-        `https://bisbuddy.xyz/api/erp/sales/graphAll/${userName}`,
+        `http://localhost:8080/api/erp/sales/graphAll/${userName}`,
         config
       );
       const productsResponse = await axios.get(
-        `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+        `http://localhost:8080/api/erp/product/getAll/${userName}`,
         config
       );
       setProducts(productsResponse.data);
@@ -122,7 +133,7 @@ export default function Sales() {
         },
       };
       const responseByProduct = await axios.get(
-        `https://bisbuddy.xyz/api/erp/sales/graphByProduct/${selectedProductId}/${userName}`,
+        `http://localhost:8080/api/erp/sales/graphByProduct/${selectedProductId}/${userName}`,
         config
       );
       updateChart(responseByProduct.data);
@@ -147,8 +158,8 @@ export default function Sales() {
       <div className="chart-container">
         {showAllGraph ? (
           <div>
-            <label>
-              Select Product:
+            <label style={{fontWeight: "600", paddingInlineEnd:"5px"}}>
+            {t("select_product")}:
               <select value={selectedProductId} onChange={handleProductIdChange}>
                 {/* <option value=""></option> */}
                 {products.map((product) => (

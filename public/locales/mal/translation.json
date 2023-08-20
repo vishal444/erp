@@ -19,5 +19,14 @@
     "select_customer": "കസ്റ്റമർ തിരഞ്ഞെടുക്കുക",
     "payment_received": "ലഭിച്ച പേയ്മെന്റ് തുക",
     "enterStockDetails": "സ്റ്റോക്ക് വിശദാംശങ്ങൾ നൽകുക",
-    "graph": "വിൽപ്പന ഗ്രാഫ്"
+    "graph": "വിൽപ്പന ഗ്രാഫ്",
+    "sales_side_nwSales": "പുതിയ വിൽപ്പന നടത്താൻ",
+    "sales_side_return": "ഇനങ്ങൾ തിരികെ വന്നത്",
+    "sales_side_payNotCompleted": "പേയ്മെന്റ് പൂർത്തിയാകാത്തത്",
+    "purchase_side_nwPurchase": "പുതിയ വാങ്ങൽ നടത്താൻ",
+    "purchase_side_return": "തിരികെ കൊടുക്കാൻ",
+    "purchase_side_payNotCompleted": "പേയ്മെന്റ് പൂർത്തിയാകാത്തത്",
+    "purchase_priceOfOneItem": "ഒരു ഇനത്തിന്റെ വില നൽകുക",
+    "purchase_amountPaid": "അടച്ച തുക നൽകുക",
+    "inventory_page": "സ്റ്റോക്ക്"
 }

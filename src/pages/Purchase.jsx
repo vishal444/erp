@@ -55,7 +55,7 @@ function Purchase() {
       };
       try {
         const productsResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/product/getAll/${userName}`,
+          `http://localhost:8080/api/erp/product/getAll/${userName}`,
           config
         );
         setProducts(productsResponse.data);
@@ -66,7 +66,7 @@ function Purchase() {
         }));
         setTransformedProducts(temp);
         const purchaseResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/purchases/${userName}`,
+          `http://localhost:8080/api/erp/purchases/${userName}`,
           config
         );
         setPurchase(purchaseResponse.data);
@@ -77,7 +77,7 @@ function Purchase() {
         }));
         setTransformedPurchases(purchaseTemp);
         const purchaseOutstandingResponse = await axios.get(
-          `https://bisbuddy.xyz/api/erp/purchaseOutstanding/${userName}`,
+          `http://localhost:8080/api/erp/purchaseOutstanding/${userName}`,
           config
         );
         setPurchaseOutstanding(purchaseOutstandingResponse.data);
@@ -116,7 +116,7 @@ function Purchase() {
     setSelectedPurchaseId(newSelectedPurchaseId);
     // Make GET request to fetch the selected sale data
     const getSelectedPurchaseResponse = await axios.get(
-      `https://bisbuddy.xyz/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
+      `http://localhost:8080/api/erp/purchasesById/${newSelectedPurchaseId}/${userName}`
     );
     // Access the response data from the resolved promise
     setProductsOfReturn(getSelectedPurchaseResponse.data);
@@ -268,7 +268,7 @@ function Purchase() {
 
     try {
       const purchaseAdd = await axios.post(
-        "https://bisbuddy.xyz/api/erp/purchases/add",
+        "http://localhost:8080/api/erp/purchases/add",
         data,
         config
       );
@@ -282,7 +282,7 @@ function Purchase() {
       // Update inventory for all products in the purchase
       for (const item of selectedProductArray) {
         const inventoryPurchaseUdpate = await axios.put(
-          `https://bisbuddy.xyz/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
+          `http://localhost:8080/api/erp/inventory/purchase/update/${item.product}/${userName}?quantity=${item.quantity}&purchase_price=${item.price}`,
           null,
           configForPut
         );
@@ -326,14 +326,14 @@ function Purchase() {
     };
     try {
       const inventoryUpdateResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
+        `http://localhost:8080/api/erp/inventory/purchase/return/${selectedProductIdForReturn}/${userName}?quantity=${quantity}`,
         null,
         config
       );
       console.log(inventoryUpdateResponse.data);
 
       const purchaseUpdateResponse = await axios.put(
-        `https://bisbuddy.xyz/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
+        `http://localhost:8080/api/erp/purchase/return/${selectedPurchaseId}/${selectedProductIdForReturn}/${userName}?returnQuantity=${quantity}&returnedAmount=${amount}`,
         null,
         config
       );
@@ -354,7 +354,7 @@ function Purchase() {
       if (productsOfReturn.outstandingAmount != null) {
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -368,7 +368,7 @@ function Purchase() {
         const deductOutstandingAmount = amount + givenReturnAmount;
         try {
           const response = await axios.put(
-            `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
+            `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${deductOutstandingAmount}`,
             null,
             config
           );
@@ -403,7 +403,7 @@ function Purchase() {
     };
     try {
       const response = await axios.put(
-        `https://bisbuddy.xyz/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
+        `http://localhost:8080/api/erp/purchases/partPayment/${selectedPurchaseId}/${userName}?nextAdvance=${restOfPayment}`,
         null,
         configForPut
       );
@@ -428,7 +428,7 @@ function Purchase() {
             >
               <div style={{ flexBasis: "40%", paddingRight: "10px" }}>
                 <label style={{fontWeight: "600"}}>
-                  Select Product:
+                {t("select_product")}
                   <div style={{ width: "250px" }}>
                     <Select
                       options={transformedProducts}
@@ -442,7 +442,7 @@ function Purchase() {
                 </label>
                 <br />
                 <div>
-                  <label style={{fontWeight: "600"}}>Enter quantity:</label>
+                  <label style={{fontWeight: "600"}}>{t("quantity")}:</label>
                   <input
                     type="number"
                     value={quantity}
@@ -450,7 +450,7 @@ function Purchase() {
                   />
                 </div>
                 <div>
-                  <label style={{fontWeight: "600"}}>Enter price of one item:</label>
+                  <label style={{fontWeight: "600"}}>{t("purchase_priceOfOneItem")}:</label>
                   <input
                     type="number"
                     value={selectedPrice}
@@ -458,7 +458,7 @@ function Purchase() {
                   />
                 </div>
                 <button onClick={AddToProductArray} className="button">
-                  Add product
+                {t("add_product_list")}
                 </button>
               </div>
               <div style={{ flexBasis: "60%", paddingLeft: "10px" }}>
@@ -518,7 +518,7 @@ function Purchase() {
               />
             </div>
             <div style={{ paddingTop: "10px" }}>
-              <label style={{fontWeight: "600"}}>Enter amount paid: </label>
+              <label style={{fontWeight: "600"}}>{t("purchase_amountPaid")}: </label>
               <input
                 type="number"
                 value={partPayment}
@@ -786,7 +786,7 @@ function Purchase() {
               }}
               onClick={() => handleOptionChange("purchase")}
             >
-              make new purchase
+              {t("purchase_side_nwPurchase")}
             </button>
             <button
               type="button"
@@ -799,7 +799,7 @@ function Purchase() {
               }}
               onClick={() => handleOptionChange("return")}
             >
-              make returns
+              {t("purchase_side_return")}
             </button>
             <button
               type="button"
@@ -812,7 +812,7 @@ function Purchase() {
               }}
               onClick={() => handleOptionChange("onHold")}
             >
-              payment not completed
+              {t("purchase_side_payNotCompleted")}
             </button>
           </div>
         </div>
